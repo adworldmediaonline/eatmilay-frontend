@@ -1,0 +1,14 @@
+"use client";
+
+import { createAuthClient } from "better-auth/react";
+import { emailOTPClient } from "better-auth/client/plugins";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
+
+export const authClient = createAuthClient({
+  baseURL: `${apiUrl}/api/auth`,
+  fetchOptions: {
+    credentials: "include",
+  },
+  plugins: [emailOTPClient()],
+});
