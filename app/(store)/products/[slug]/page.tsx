@@ -37,10 +37,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const mainImage = images[0];
 
   return (
-    <StoreSection>
-      <StoreContainer>
-        <Breadcrumb className="mb-4 sm:mb-6 overflow-x-auto">
-          <BreadcrumbList>
+    <StoreSection className="overflow-x-hidden">
+      <StoreContainer className="min-w-0">
+        <Breadcrumb className="mb-4 sm:mb-6">
+          <BreadcrumbList className="min-w-0 flex-wrap">
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
             </BreadcrumbItem>
@@ -55,9 +55,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-md">
-          <div className="grid gap-6 p-4 sm:p-6 md:grid-cols-2 md:gap-10 md:p-10">
-            <div className="space-y-4">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-border/80 bg-card shadow-md">
+          <div className="grid min-w-0 grid-cols-1 gap-4 p-4 sm:gap-6 sm:p-6 md:grid-cols-2 md:gap-10 md:p-10">
+            <div className="min-w-0 space-y-4">
               <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
                 {mainImage?.url ? (
                   <Image
@@ -94,7 +94,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               )}
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex min-w-0 flex-col">
               {product.categoryName && (product.categorySlug ?? product.categoryId) && (
                 <Link
                   href={
@@ -107,7 +107,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {product.categoryName}
                 </Link>
               )}
-              <h1 className="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
+              <h1 className="wrap-break-word text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
                 {product.name}
               </h1>
               {product.shortDescription && (

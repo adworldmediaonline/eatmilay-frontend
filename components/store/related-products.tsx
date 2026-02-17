@@ -23,7 +23,7 @@ export function RelatedProducts({
   if (products.length === 0) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       <div className="flex items-center gap-4">
         <div className="h-px flex-1 bg-border" />
         <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">

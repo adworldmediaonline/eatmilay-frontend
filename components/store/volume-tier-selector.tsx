@@ -20,15 +20,15 @@ export function VolumeTierSelector({
   if (tiers.length === 0) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+    <div className="min-w-0 space-y-4">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+        <div className="h-px min-w-0 flex-1 bg-border" />
+        <span className="text-muted-foreground shrink-0 text-xs font-semibold uppercase tracking-wider">
           Bundle & Save
         </span>
-        <div className="h-px flex-1 bg-border" />
+        <div className="h-px min-w-0 flex-1 bg-border" />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
         {tiers.map((tier, i) => {
           const qty = tier.minQuantity;
           const packName = qty === 1 ? "Buy 1" : `Pack of ${qty}`;
@@ -43,7 +43,7 @@ export function VolumeTierSelector({
               type="button"
               onClick={() => onSelect(i)}
               className={cn(
-                "flex min-h-[88px] flex-col items-start rounded-xl border-2 p-4 text-left transition-colors",
+                "flex min-h-[88px] min-w-0 flex-col items-start rounded-xl border-2 p-3 text-left transition-colors sm:p-4",
                 isSelected
                   ? "border-primary bg-primary/5"
                   : "border-border bg-muted/20 hover:border-primary/30"

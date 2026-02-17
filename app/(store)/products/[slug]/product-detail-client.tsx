@@ -93,8 +93,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-baseline gap-2">
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="flex min-w-0 flex-wrap items-baseline gap-2">
         {isVariable &&
         volumeTiers.length === 0 &&
         variants.length > 0 ? (
@@ -136,7 +136,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       />
 
       {isBundle && bundleItems.length > 0 && (
-        <div className="rounded-lg border bg-muted/20 p-4">
+        <div className="min-w-0 overflow-hidden rounded-lg border bg-muted/20 p-3 sm:p-4">
           <h3 className="mb-3 text-sm font-medium">What&apos;s included</h3>
           <ul className="space-y-2">
             {bundleItems.map((item) => (
@@ -160,7 +160,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         size="lg"
         onClick={handleAddToCart}
         disabled={!canAddToCart}
-        className="min-h-12 w-full text-base sm:w-auto"
+        className="min-h-12 w-full text-base sm:min-w-[200px] sm:w-auto"
       >
         {canAddToCart ? "Add to cart" : getStockStatusLabel(stockStatus)}
       </Button>

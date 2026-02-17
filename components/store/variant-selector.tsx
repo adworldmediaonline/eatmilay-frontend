@@ -22,23 +22,23 @@ export function VariantSelector({
   if (variants.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       <h3 className="text-sm font-medium">{optionName}</h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex min-w-0 flex-wrap gap-2">
         {variants.map((v, i) => (
           <button
             key={i}
             type="button"
             onClick={() => onSelect(i)}
             className={cn(
-              "relative min-h-11 rounded-full border-2 px-4 py-2 text-sm transition-colors",
+              "relative flex min-h-11 min-w-0 shrink-0 items-center rounded-full border-2 px-4 py-2 text-sm transition-colors",
               selectedIndex === i
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-border bg-muted/30 hover:border-primary/50"
             )}
           >
-            <span className="font-medium">{v.optionValues.join(" / ")}</span>
-            <span className="text-muted-foreground ml-2">
+            <span className="min-w-0 truncate font-medium">{v.optionValues.join(" / ")}</span>
+            <span className="text-muted-foreground shrink-0 pl-2">
               — {formatPrice(v.price, currency)}
             </span>
             {v.label === "most_popular" && (

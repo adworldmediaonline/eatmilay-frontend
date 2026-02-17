@@ -26,22 +26,24 @@ function AccordionSection({ value, title, html, icon }: AccordionSectionProps) {
   const teaser = stripHtml(html);
 
   return (
-    <AccordionItem value={value} className="border-border px-4">
+    <AccordionItem value={value} className="border-border min-w-0 px-3 sm:px-4">
       <AccordionTrigger className="hover:no-underline">
-        <div className="flex w-full items-center gap-3 py-2">
+        <div className="flex min-w-0 flex-1 items-start gap-3 py-2 text-left">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
             {icon}
           </div>
-          <div className="min-w-0 flex-1 text-left">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <p className="font-semibold text-sm">{title}</p>
             {teaser && (
-              <p className="text-muted-foreground mt-0.5 truncate text-xs">{teaser}</p>
+              <p className="text-muted-foreground mt-0.5 line-clamp-2 wrap-break-word text-xs">
+                {teaser}
+              </p>
             )}
           </div>
         </div>
       </AccordionTrigger>
       <AccordionContent>
-        <div className="pl-12 pr-2 pb-2">
+        <div className="min-w-0 overflow-x-auto pl-10 pr-2 pb-2 sm:pl-12">
           <RichTextContent html={html} />
         </div>
       </AccordionContent>
@@ -64,8 +66,8 @@ export function ProductDetailAccordion({
   if (!hasContent) return null;
 
   return (
-    <div className="mt-6">
-      <Accordion type="multiple" defaultValue={[]} className="w-full">
+    <div className="mt-6 min-w-0">
+      <Accordion type="multiple" defaultValue={[]} className="w-full min-w-0">
         {description && (
           <AccordionSection
             value="description"
