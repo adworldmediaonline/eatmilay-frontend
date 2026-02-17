@@ -12,6 +12,7 @@ export { CategoryCard } from "./category-card";
 export { CollectionCard } from "./collection-card";
 export { EmptyState } from "./empty-state";
 export { StoreHeader } from "./store-header";
+export { StoreFooter } from "./store-footer";
 export { CartProvider, useCart } from "./cart-provider";
 export { CartDrawer } from "./cart-drawer";
 export { CartItem } from "./cart-item";

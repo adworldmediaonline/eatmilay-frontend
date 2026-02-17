@@ -1,5 +1,6 @@
 import { CartProvider } from "@/components/store/cart-provider";
 import { StoreHeader } from "@/components/store/store-header";
+import { StoreFooter } from "@/components/store/store-footer";
 
 async function getSession() {
   try {
@@ -32,6 +33,7 @@ export default async function StoreLayout({
       <div className="flex min-h-svh flex-col">
         <StoreHeader user={session?.user} />
         <main className="flex-1">{children}</main>
+        <StoreFooter />
       </div>
     </CartProvider>
   );
