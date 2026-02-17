@@ -155,10 +155,33 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       </Button>
 
       {product.description && (
-        <div
-          className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
+        <div className="space-y-2">
+          <h3 className="font-semibold text-sm">Description</h3>
+          <div
+            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
+        </div>
+      )}
+
+      {product.nutrients && (
+        <div className="space-y-2">
+          <h3 className="font-semibold text-sm">Nutrients</h3>
+          <div
+            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
+            dangerouslySetInnerHTML={{ __html: product.nutrients }}
+          />
+        </div>
+      )}
+
+      {product.benefits && (
+        <div className="space-y-2">
+          <h3 className="font-semibold text-sm">Benefits</h3>
+          <div
+            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
+            dangerouslySetInnerHTML={{ __html: product.benefits }}
+          />
+        </div>
       )}
 
       {product.relatedProducts && product.relatedProducts.length > 0 && (

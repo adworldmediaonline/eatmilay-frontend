@@ -40,6 +40,8 @@ export type Product = {
   name: string;
   slug: string;
   description: string;
+  nutrients?: string;
+  benefits?: string;
   shortDescription: string;
   categoryId: string | null;
   categoryName: string | null;
