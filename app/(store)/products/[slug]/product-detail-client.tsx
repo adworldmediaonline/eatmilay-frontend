@@ -7,6 +7,7 @@ import { StockBadge } from "@/components/store/stock-badge";
 import { VariantSelector } from "@/components/store/variant-selector";
 import { VolumeTierSelector } from "@/components/store/volume-tier-selector";
 import { RelatedProducts } from "@/components/store/related-products";
+import { ProductDetailAccordion } from "@/components/store/product-detail-accordion";
 import { useCart } from "@/components/store/cart-provider";
 import {
   getStockStatus,
@@ -154,35 +155,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         {canAddToCart ? "Add to cart" : getStockStatusLabel(stockStatus)}
       </Button>
 
-      {product.description && (
-        <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Description</h3>
-          <div
-            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
-            dangerouslySetInnerHTML={{ __html: product.description }}
-          />
-        </div>
-      )}
-
-      {product.nutrients && (
-        <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Nutrients</h3>
-          <div
-            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
-            dangerouslySetInnerHTML={{ __html: product.nutrients }}
-          />
-        </div>
-      )}
-
-      {product.benefits && (
-        <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Benefits</h3>
-          <div
-            className="text-foreground text-sm [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_em]:italic"
-            dangerouslySetInnerHTML={{ __html: product.benefits }}
-          />
-        </div>
-      )}
+      <ProductDetailAccordion
+        description={product.description}
+        nutrients={product.nutrients}
+        benefits={product.benefits}
+      />
 
       {product.relatedProducts && product.relatedProducts.length > 0 && (
         <div className="mt-8">
