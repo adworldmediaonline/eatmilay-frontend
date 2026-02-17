@@ -69,8 +69,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   const handleAddToCart = () => {
     if (!canAddToCart) return;
-    const quantity = selectedPack?.minQuantity ?? 1;
-    const unitPrice = displayPrice;
+    const quantity =
+      isBundle
+        ? 1
+        : volumeTiers.length > 0 && selectedPack
+          ? selectedPack.minQuantity
+          : 1;
+    const unitPrice =
+      isBundle
+        ? displayPrice
+        : volumeTiers.length > 0 && selectedPack
+          ? selectedPack.price / selectedPack.minQuantity
+          : displayPrice;
     addItem({
       productId: product.id,
       productName: product.name,

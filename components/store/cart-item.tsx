@@ -30,7 +30,7 @@ export function CartItem({
       <div className="min-w-0 flex-1">
         <h4 className="font-medium line-clamp-2">{item.productName}</h4>
         <p className="text-muted-foreground mt-0.5 text-sm">
-          {formatPrice(item.unitPrice, "USD")} × {item.quantity}
+          {formatPrice(item.lineTotal, "USD")}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <div className="flex items-center rounded-lg border">

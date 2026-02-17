@@ -63,7 +63,18 @@ export function ProductOptionsDialog({
         ? selectedVariant.compareAtPrice ?? product.compareAtPrice
         : product.compareAtPrice;
 
-  const quantity = selectedTier?.minQuantity ?? 1;
+  const quantity =
+    isBundle
+      ? 1
+      : volumeTiers.length > 0 && selectedTier
+        ? selectedTier.minQuantity
+        : 1;
+  const unitPrice =
+    isBundle
+      ? displayPrice
+      : volumeTiers.length > 0 && selectedTier
+        ? selectedTier.price / selectedTier.minQuantity
+        : displayPrice;
 
   const stockStatus = isVariable
     ? getStockStatus(
@@ -92,7 +103,7 @@ export function ProductOptionsDialog({
       productSlug: product.slug,
       variantIndex: isVariable ? selectedVariantIndex : undefined,
       quantity,
-      unitPrice: displayPrice,
+      unitPrice,
       image: product.images?.[0] ?? null,
     });
     onOpenChange(false);
