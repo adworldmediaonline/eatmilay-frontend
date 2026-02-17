@@ -84,6 +84,7 @@ export type ProductCategory = {
   slug: string;
   description: string;
   image: ProductImage | null;
+  productCount?: number;
   createdAt?: string;
   updatedAt?: string;
 };

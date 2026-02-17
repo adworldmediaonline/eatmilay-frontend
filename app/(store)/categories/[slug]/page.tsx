@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
@@ -6,6 +7,7 @@ import {
   getStoreProducts,
 } from "@/lib/store-api";
 import { ProductGrid } from "@/components/store/product-grid";
+import { ProductImage } from "@/components/store/product-image";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -42,37 +44,63 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const products = await getCategoryProducts(category.id);
 
   return (
-    <StoreSection>
-      <StoreContainer>
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/categories">Categories</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{category.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">{category.name}</h1>
-          {category.description && (
-            <p className="text-muted-foreground mt-1">{category.description}</p>
+    <>
+      {/* Hero with category image */}
+      <section className="relative overflow-hidden bg-muted/50">
+        <div className="absolute inset-0">
+          {category.image?.url && (
+            <ProductImage
+              image={category.image}
+              alt={category.name}
+              objectFit="cover"
+              sizes="100vw"
+              className="size-full opacity-40"
+            />
           )}
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background"
+            aria-hidden
+          />
         </div>
+        <StoreContainer className="relative py-10 sm:py-12">
+          <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/categories">Categories</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{category.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {category.name}
+          </h1>
+          {category.description && (
+            <p className="text-muted-foreground mt-2 max-w-2xl text-sm sm:text-base">
+              {category.description}
+            </p>
+          )}
+          <p className="text-muted-foreground mt-1 text-sm">
+            {products.length} {products.length === 1 ? "product" : "products"}
+          </p>
+        </StoreContainer>
+      </section>
 
-        <ProductGrid
-          products={products}
-          emptyTitle={`No products in ${category.name}`}
-          emptyDescription="Check back later for new arrivals."
-        />
-      </StoreContainer>
-    </StoreSection>
+      <StoreSection>
+        <StoreContainer>
+          <ProductGrid
+            products={products}
+            emptyTitle={`No products in ${category.name}`}
+            emptyDescription="Check back later for new arrivals."
+          />
+        </StoreContainer>
+      </StoreSection>
+    </>
   );
 }

@@ -35,8 +35,15 @@ async function CategoriesSection() {
   if (categories.length === 0) return null;
   return (
     <section className="space-y-4 sm:space-y-6">
-      <h2 className="text-xl font-semibold sm:text-2xl">Categories</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+        <h2 className="min-w-0 shrink text-xl font-semibold sm:text-2xl">
+          Browse by category
+        </h2>
+        <Button variant="outline" size="sm" asChild className="shrink-0">
+          <Link href="/categories">View all</Link>
+        </Button>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
         {categories.map((cat) => (
           <CategoryCard key={cat.id} category={cat} />
         ))}
