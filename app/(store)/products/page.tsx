@@ -35,7 +35,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         <h1 className="mb-6 text-2xl font-bold sm:text-3xl">All products</h1>
         <Suspense
           fallback={
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}

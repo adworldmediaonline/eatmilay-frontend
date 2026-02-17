@@ -31,7 +31,7 @@ export function RelatedProducts({
         </span>
         <div className="h-px flex-1 bg-border" />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {products.map((rp) => (
           <Link
             key={rp.id}
@@ -49,8 +49,8 @@ export function RelatedProducts({
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </div>
-            <div className="flex flex-1 flex-col p-3">
-              <span className="font-medium line-clamp-2">{rp.name}</span>
+            <div className="flex min-w-0 flex-1 flex-col p-3">
+              <span className="wrap-break-word font-medium">{rp.name}</span>
               <PriceDisplay amount={rp.price} currency={currency} size="sm" />
             </div>
           </Link>

@@ -78,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <>
       <article
         className={cn(
-          "group/card flex flex-col overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm transition-all duration-300",
+          "group/card flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm transition-all duration-300",
           "hover:border-border hover:shadow-lg hover:-translate-y-1",
           "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
         )}
@@ -125,17 +125,17 @@ export function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         {/* Content zone */}
-        <div className="flex flex-1 flex-col p-4">
+        <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
           {product.categoryName && (
-            <p className="text-muted-foreground mb-0.5 text-xs font-medium uppercase tracking-wider">
+            <p className="text-muted-foreground mb-0.5 truncate text-xs font-medium uppercase tracking-wider">
               {product.categoryName}
             </p>
           )}
           <Link
             href={`/products/${product.slug}`}
-            className="mt-0.5 block focus:outline-none focus:ring-0"
+            className="mt-0.5 block min-w-0 focus:outline-none focus:ring-0"
           >
-            <h3 className="font-semibold leading-snug text-foreground transition-colors line-clamp-2 text-sm sm:text-base group-hover/card:text-foreground/90">
+            <h3 className="wrap-break-word font-semibold leading-snug text-foreground transition-colors text-sm sm:text-base group-hover/card:text-foreground/90">
               {product.name}
             </h3>
           </Link>
@@ -164,7 +164,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Action zone */}
           <div
-            className="mt-4 flex gap-2"
+            className="mt-3 flex min-w-0 flex-wrap gap-2 sm:mt-4"
             onClick={(e) => e.stopPropagation()}
           >
             {needsOptions ? (
@@ -172,7 +172,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 size="sm"
                 variant="outline"
                 onClick={handleChooseOptions}
-                className="min-h-11 flex-1 gap-2"
+                className="min-h-10 min-w-0 flex-1 gap-1.5 text-xs sm:min-h-11 sm:gap-2 sm:text-sm"
                 aria-label={`Choose options for ${product.name}`}
               >
                 <SlidersHorizontalIcon className="size-4 shrink-0" />
@@ -183,7 +183,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 size="sm"
                 onClick={handleAddToCart}
                 disabled={!canAddToCart}
-                className="min-h-11 flex-1 gap-2"
+                className="min-h-10 min-w-0 flex-1 gap-1.5 text-xs sm:min-h-11 sm:gap-2 sm:text-sm"
                 aria-label={
                   canAddToCart
                     ? `Add ${product.name} to cart`
