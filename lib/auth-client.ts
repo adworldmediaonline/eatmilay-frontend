@@ -3,10 +3,9 @@
 import { createAuthClient } from "better-auth/react";
 import { emailOTPClient } from "better-auth/client/plugins";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
-
+// Use same-origin /api/auth (proxied to backend) for cross-domain cookie support
 export const authClient = createAuthClient({
-  baseURL: `${apiUrl}/api/auth`,
+  baseURL: "/api/auth",
   fetchOptions: {
     credentials: "include",
   },
