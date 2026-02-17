@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import {
   getStoreCollectionBySlug,
@@ -20,9 +20,7 @@ type CollectionPageProps = {
 };
 
 async function getCollection(slug: string) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(`store-collection-${slug}`);
+  await connection();
   try {
     return await getStoreCollectionBySlug(slug);
   } catch {
@@ -31,9 +29,7 @@ async function getCollection(slug: string) {
 }
 
 async function getCollectionProducts(collectionId: string) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-products");
+  await connection();
   return getStoreProducts({ collectionId, limit: 50 });
 }
 

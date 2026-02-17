@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { HeroSection } from "@/components/store/hero-section";
@@ -14,9 +14,7 @@ import {
 } from "@/lib/store-api";
 
 async function FeaturedProducts() {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-products");
+  await connection();
   const products = await getStoreProducts({ limit: 8 });
   return (
     <section className="space-y-4 sm:space-y-6">
@@ -32,9 +30,7 @@ async function FeaturedProducts() {
 }
 
 async function CategoriesSection() {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-categories");
+  await connection();
   const categories = await getStoreCategories();
   if (categories.length === 0) return null;
   return (
@@ -50,9 +46,7 @@ async function CategoriesSection() {
 }
 
 async function CollectionsSection() {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-collections");
+  await connection();
   const collections = await getStoreCollections();
   if (collections.length === 0) return null;
   return (

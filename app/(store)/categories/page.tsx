@@ -1,14 +1,12 @@
 import { Suspense } from "react";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { getStoreCategories } from "@/lib/store-api";
 import { CategoryCard } from "@/components/store/category-card";
 import { EmptyState } from "@/components/store/empty-state";
 
 async function CategoriesList() {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-categories");
+  await connection();
   const categories = await getStoreCategories();
   if (categories.length === 0) {
     return (

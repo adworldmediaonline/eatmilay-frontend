@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import {
   getStoreCategoryBySlug,
@@ -20,9 +20,7 @@ type CategoryPageProps = {
 };
 
 async function getCategory(slug: string) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(`store-category-${slug}`);
+  await connection();
   try {
     return await getStoreCategoryBySlug(slug);
   } catch {
@@ -31,9 +29,7 @@ async function getCategory(slug: string) {
 }
 
 async function getCategoryProducts(categoryId: string) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-products");
+  await connection();
   return getStoreProducts({ categoryId, limit: 50 });
 }
 

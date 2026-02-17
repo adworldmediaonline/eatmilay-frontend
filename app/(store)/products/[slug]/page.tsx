@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { getStoreProductBySlug } from "@/lib/store-api";
 import { ProductDetailClient } from "./product-detail-client";
@@ -19,9 +19,7 @@ type ProductPageProps = {
 };
 
 async function getProduct(slug: string) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(`store-product-${slug}`);
+  await connection();
   try {
     return await getStoreProductBySlug(slug);
   } catch {

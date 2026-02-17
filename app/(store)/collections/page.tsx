@@ -1,14 +1,12 @@
 import { Suspense } from "react";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { getStoreCollections } from "@/lib/store-api";
 import { CollectionCard } from "@/components/store/collection-card";
 import { EmptyState } from "@/components/store/empty-state";
 
 async function CollectionsList() {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-collections");
+  await connection();
   const collections = await getStoreCollections();
   if (collections.length === 0) {
     return (

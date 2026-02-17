@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { getStoreProducts } from "@/lib/store-api";
 import { ProductGrid } from "@/components/store/product-grid";
@@ -15,9 +15,7 @@ async function ProductsList({
   categoryId?: string;
   collectionId?: string;
 }) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("store-products");
+  await connection();
   const products = await getStoreProducts({
     categoryId,
     collectionId,
