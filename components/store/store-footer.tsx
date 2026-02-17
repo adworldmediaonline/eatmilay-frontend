@@ -2,10 +2,17 @@ import Link from "next/link";
 import { StoreContainer } from "./store-layout";
 import { BRAND } from "@/lib/brand";
 
-const footerLinks = [
+const navLinks = [
   { href: "/products", label: "Products" },
   { href: "/categories", label: "Categories" },
   { href: "/collections", label: "Collections" },
+];
+
+const policyLinks = [
+  { href: "/shipping-policy", label: "Shipping Policy" },
+  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/refund-policy", label: "Refund Policy" },
+  { href: "/terms-of-service", label: "Terms of Service" },
 ];
 
 export function StoreFooter() {
@@ -27,17 +34,30 @@ export function StoreFooter() {
             </p>
           </div>
 
-          <nav className="flex flex-wrap gap-6 sm:gap-8">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground text-sm font-medium transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:gap-8">
+            <nav className="flex flex-wrap gap-6 sm:gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-muted-foreground text-sm font-medium transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <nav className="flex flex-wrap gap-6 sm:gap-8">
+              {policyLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-muted-foreground text-sm font-medium transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
         <div className="border-t border-border/60 py-6">
