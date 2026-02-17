@@ -2,31 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { StoreContainer } from "./store-layout";
 import { BRAND } from "@/lib/brand";
-import {
-  TruckIcon,
-  ShieldCheckIcon,
-  RotateCcwIcon,
-  ArrowRightIcon,
-  LayoutGridIcon,
-} from "lucide-react";
-
-const trustBadges = [
-  {
-    icon: TruckIcon,
-    label: "Free shipping",
-    description: "On orders over $50",
-  },
-  {
-    icon: ShieldCheckIcon,
-    label: "Secure checkout",
-    description: "256-bit encryption",
-  },
-  {
-    icon: RotateCcwIcon,
-    label: "Easy returns",
-    description: "30-day guarantee",
-  },
-] as const;
+import { ArrowRightIcon, LayoutGridIcon } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -102,24 +78,6 @@ export function HeroSection() {
             >
               Collections
             </Link>
-          </div>
-
-          {/* Trust badges */}
-          <div className="mt-8 flex flex-wrap justify-center gap-6 border-t border-border/60 pt-6 sm:gap-8 animate-in fade-in duration-700">
-            {trustBadges.map(({ icon: Icon, label, description }) => (
-              <div
-                key={label}
-                className="flex items-center gap-3"
-              >
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted/80">
-                  <Icon className="text-muted-foreground size-4" />
-                </div>
-                <div>
-                  <p className="font-semibold text-xs">{label}</p>
-                  <p className="text-muted-foreground text-[11px]">{description}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </StoreContainer>
