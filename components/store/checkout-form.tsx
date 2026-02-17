@@ -17,6 +17,7 @@ import {
   type ShippingAddress,
   type ShippingCourier,
 } from "@/lib/store-api";
+import { BRAND } from "@/lib/brand";
 import { toast } from "sonner";
 
 const PICKUP_POSTCODE =
@@ -141,7 +142,7 @@ export function CheckoutForm() {
           key: keyId,
           amount: Math.round(total * 100),
           currency: "INR",
-          name: "Store",
+          name: BRAND.name,
           description: `Order #${order.orderNumber}`,
           order_id: order.razorpayOrderId,
           handler: async (response: {

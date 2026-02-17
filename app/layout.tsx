@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "User App",
-  description: "User application with Better Auth",
+  title: "Eat Milay",
+  description: "Eat Milay - Quality products at great prices. Browse our handpicked selection.",
 };
 
 export default function RootLayout({

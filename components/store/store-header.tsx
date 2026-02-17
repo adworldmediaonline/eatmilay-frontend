@@ -41,6 +41,7 @@ import { CartDrawer } from "./cart-drawer";
 import { useCart } from "./cart-provider";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { BRAND } from "@/lib/brand";
 
 type StoreHeaderProps = {
   user?: {
@@ -161,7 +162,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
                 href="/"
                 className="shrink-0 text-xl font-bold tracking-tight transition-opacity hover:opacity-80"
               >
-                Store
+                {BRAND.name}
               </Link>
 
               <nav className="hidden md:flex md:items-center md:gap-1">

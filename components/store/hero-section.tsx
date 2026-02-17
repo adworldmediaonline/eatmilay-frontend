@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { StoreContainer } from "./store-layout";
+import { BRAND } from "@/lib/brand";
 import {
   TruckIcon,
   ShieldCheckIcon,
@@ -50,14 +51,14 @@ export function HeroSection() {
         <div className="flex flex-col items-center px-2 py-8 text-center sm:py-10 md:py-12">
           {/* Badge / eyebrow */}
           <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-500">
-            Curated for you
+            Welcome to {BRAND.name}
           </p>
 
           {/* Headline */}
           <h1 className="max-w-4xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-            Discover quality products
+            {BRAND.tagline}
             <br />
-            <span className="text-muted-foreground">at great prices</span>
+            <span className="text-muted-foreground">curated for you</span>
           </h1>
 
           {/* Subheadline */}
