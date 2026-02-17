@@ -126,45 +126,47 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Content zone */}
         <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-4">
-          {product.categoryName && (
-            <p className="text-muted-foreground mb-0.5 truncate text-xs font-medium uppercase tracking-wider">
-              {product.categoryName}
-            </p>
-          )}
-          <Link
-            href={`/products/${product.slug}`}
-            className="mt-0.5 block min-w-0 focus:outline-none focus:ring-0"
-          >
-            <h3 className="wrap-break-word font-semibold leading-snug text-foreground transition-colors text-sm sm:text-base group-hover/card:text-foreground/90">
-              {product.name}
-            </h3>
-          </Link>
-
-          {/* Price & stock */}
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
-            {showFromPrice ? (
-              <span className="font-semibold text-sm">
-                From {formatPrice(displayPrice, product.currency)}
-              </span>
-            ) : (
-              <PriceDisplay
-                amount={displayPrice}
-                currency={product.currency}
-                compareAt={hasSale ? displayCompareAt : null}
-                size="sm"
-              />
+          <div className="min-w-0 flex-1">
+            {product.categoryName && (
+              <p className="text-muted-foreground mb-0.5 truncate text-xs font-medium uppercase tracking-wider">
+                {product.categoryName}
+              </p>
             )}
-            <StockBadge
-              status={stockStatus}
-              className={cn(
-                isOutOfStock && "opacity-70"
+            <Link
+              href={`/products/${product.slug}`}
+              className="mt-0.5 block min-w-0 focus:outline-none focus:ring-0"
+            >
+              <h3 className="wrap-break-word font-semibold leading-snug text-foreground transition-colors text-sm sm:text-base group-hover/card:text-foreground/90">
+                {product.name}
+              </h3>
+            </Link>
+
+            {/* Price & stock */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+              {showFromPrice ? (
+                <span className="font-semibold text-sm">
+                  From {formatPrice(displayPrice, product.currency)}
+                </span>
+              ) : (
+                <PriceDisplay
+                  amount={displayPrice}
+                  currency={product.currency}
+                  compareAt={hasSale ? displayCompareAt : null}
+                  size="sm"
+                />
               )}
-            />
+              <StockBadge
+                status={stockStatus}
+                className={cn(
+                  isOutOfStock && "opacity-70"
+                )}
+              />
+            </div>
           </div>
 
-          {/* Action zone */}
+          {/* Action zone - mt-auto pushes to bottom for aligned buttons across cards */}
           <div
-            className="mt-3 flex min-w-0 flex-wrap gap-2 sm:mt-4"
+            className="mt-auto flex min-w-0 flex-wrap gap-2 pt-3 sm:pt-4"
             onClick={(e) => e.stopPropagation()}
           >
             {needsOptions ? (
