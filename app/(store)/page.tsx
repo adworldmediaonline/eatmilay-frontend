@@ -18,9 +18,9 @@ async function FeaturedProducts() {
   const products = await getStoreProducts({ limit: 8 });
   return (
     <section className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-semibold sm:text-2xl">Featured products</h2>
-        <Button variant="outline" size="sm" asChild className="w-fit">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+        <h2 className="min-w-0 shrink text-xl font-semibold sm:text-2xl">Featured products</h2>
+        <Button variant="outline" size="sm" asChild className="shrink-0">
           <Link href="/products">View all</Link>
         </Button>
       </div>
