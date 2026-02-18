@@ -72,6 +72,32 @@ export async function getStoreCollectionBySlug(
   return res.json();
 }
 
+export type OrderTrackingResult = {
+  orderNumber: string;
+  status: string;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  courierName: string | null;
+  estimatedDelivery: string | null;
+  shiprocketError: string | null;
+};
+
+export async function getOrderTracking(
+  orderNumber: string,
+  email: string
+): Promise<OrderTrackingResult> {
+  const params = new URLSearchParams({
+    orderNumber: orderNumber.trim(),
+    email: email.trim(),
+  });
+  const res = await fetch(`${apiUrl}/api/store/orders/track?${params}`);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to fetch tracking");
+  }
+  return data;
+}
+
 export type ValidateDiscountResult =
   | { valid: true; discountAmount: number; message?: string }
   | { valid: false; message: string };

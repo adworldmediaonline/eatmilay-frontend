@@ -24,6 +24,9 @@ export default async function CheckoutConfirmationPage({
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Button asChild size="lg">
+            <Link href="/track-order">Track your order</Link>
+          </Button>
+          <Button variant="outline" size="lg" asChild>
             <Link href="/products">Continue shopping</Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
