@@ -42,7 +42,7 @@ export function CheckoutForm() {
   const [notes, setNotes] = useState("");
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
+  const paymentMethod = "razorpay" as const;
   const [shippingRates, setShippingRates] = useState<ShippingCourier[]>([]);
   const [selectedCourierId, setSelectedCourierId] = useState<number | null>(null);
   const [shippingCost, setShippingCost] = useState(0);
@@ -84,7 +84,7 @@ export function CheckoutForm() {
         const data = await getShippingRates({
           pickup_postcode: PICKUP_POSTCODE,
           delivery_postcode: address.postalCode,
-          cod: paymentMethod === "cod",
+          cod: false,
           weight: calculateWeight(),
         });
         const couriers = data.available_courier_companies ?? [];
@@ -110,7 +110,7 @@ export function CheckoutForm() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [address.postalCode, paymentMethod, calculateWeight]);
+  }, [address.postalCode, calculateWeight]);
 
   const handleApplyCoupon = (amount: number, code: string) => {
     setDiscountAmount(amount);
@@ -224,7 +224,7 @@ export function CheckoutForm() {
       return;
     }
 
-    if (paymentMethod === "razorpay" && shippingCost === 0 && address.postalCode) {
+    if (shippingCost === 0 && address.postalCode) {
       if (isLoadingRates) {
         toast.error("Please wait for shipping rates to load");
         return;
@@ -254,11 +254,7 @@ export function CheckoutForm() {
         estimatedDelivery: selectedCourier?.etd,
       });
 
-      if (paymentMethod === "cod") {
-        clearCart();
-        toast.success(`Order ${order.orderNumber} placed successfully`);
-        router.push(`/checkout/confirmation?order=${order.orderNumber}`);
-      } else if (order.razorpayOrderId) {
+      if (order.razorpayOrderId) {
         openRazorpayCheckout({
           id: order.id,
           razorpayOrderId: order.razorpayOrderId,
@@ -451,26 +447,9 @@ export function CheckoutForm() {
 
           <div className="space-y-2">
             <Label>Payment method</Label>
-            <div className="flex gap-4">
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "razorpay"}
-                  onChange={() => setPaymentMethod("razorpay")}
-                />
-                <span>Online (Razorpay)</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "cod"}
-                  onChange={() => setPaymentMethod("cod")}
-                />
-                <span>Cash on Delivery</span>
-              </label>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Online Payment (Razorpay) only
+            </p>
           </div>
         </div>
 
