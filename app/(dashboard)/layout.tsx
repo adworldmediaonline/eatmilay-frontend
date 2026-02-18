@@ -17,6 +17,8 @@ async function getSession() {
   return res.json();
 }
 
+const ADMIN_ROLES = ["admin", "super_admin"];
+
 async function DashboardLayoutContent({
   children,
 }: {
@@ -25,6 +27,11 @@ async function DashboardLayoutContent({
   const session = await getSession();
   if (!session?.user) {
     redirect("/login");
+  }
+
+  const role = session.user?.role ?? "user";
+  if (ADMIN_ROLES.includes(role)) {
+    redirect("/");
   }
 
   return <DashboardShell session={session}>{children}</DashboardShell>;
