@@ -82,8 +82,7 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="text-xl font-semibold">Verify your email</CardTitle>
           <CardDescription>
@@ -119,7 +118,7 @@ function VerifyEmailContent() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="mt-4 flex flex-col gap-4 pb-6">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Verifying..." : "Verify email"}
             </Button>
@@ -145,7 +144,6 @@ function VerifyEmailContent() {
           </CardFooter>
         </form>
       </Card>
-    </div>
   );
 }
 
@@ -153,7 +151,7 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-svh items-center justify-center">
+        <div className="flex items-center justify-center py-12">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       }
