@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "./price-display";
 import type { VolumeTier } from "@/lib/store-types";
 
@@ -36,6 +37,12 @@ export function VolumeTierSelector({
             tier.compareAtPrice != null && tier.compareAtPrice > tier.price
               ? tier.compareAtPrice - tier.price
               : 0;
+          const savingsPercent =
+            tier.compareAtPrice != null &&
+            tier.compareAtPrice > 0 &&
+            savings > 0
+              ? Math.round((savings / tier.compareAtPrice) * 100)
+              : 0;
           const isSelected = selectedIndex === i;
           return (
             <button
@@ -67,10 +74,13 @@ export function VolumeTierSelector({
                   </span>
                 )}
               </div>
-              {savings > 0 && (
-                <p className="text-muted-foreground mt-1 text-sm">
-                  You save {formatPrice(savings, currency)}
-                </p>
+              {savingsPercent > 0 && (
+                <Badge
+                  variant="outline"
+                  className="mt-1 border-green-500/30 bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                >
+                  Save {savingsPercent}%
+                </Badge>
               )}
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-semibold">
