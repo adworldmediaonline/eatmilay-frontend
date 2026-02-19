@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { validateStoreDiscount } from "@/lib/store-api";
@@ -47,15 +48,20 @@ export function CouponInput({
   };
 
   if (appliedCode && appliedAmount != null && appliedAmount > 0) {
+    const savingsPercent =
+      subtotal > 0 ? Math.round((appliedAmount / subtotal) * 100) : 0;
     return (
       <div className="flex items-center justify-between rounded-lg border border-green-500/30 bg-green-500/5 p-3">
         <div>
           <p className="text-sm font-medium text-green-700 dark:text-green-400">
             Coupon {appliedCode} applied
           </p>
-          <p className="text-muted-foreground text-xs">
-            You save ${appliedAmount.toFixed(2)}
-          </p>
+          <Badge
+            variant="outline"
+            className="mt-1 border-green-500/30 bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+          >
+            Save {savingsPercent}%
+          </Badge>
         </div>
         {onRemove && (
           <Button variant="ghost" size="sm" onClick={onRemove}>

@@ -6,6 +6,7 @@ const navLinks = [
   { href: "/products", label: "Products" },
   { href: "/categories", label: "Categories" },
   { href: "/collections", label: "Collections" },
+  { href: "/track-order", label: "Track order" },
 ];
 
 const policyLinks = [
