@@ -13,9 +13,11 @@ import {
   validateStoreDiscount,
   getAvailableOffers,
   getStoreCouponSettings,
+  saveCart as saveCartToServer,
 } from "@/lib/store-api";
 import { getStoredReferralCode } from "./referral-tracker";
 import { useCheckoutEmail } from "./checkout-email-context";
+import { authClient } from "@/lib/auth-client";
 import type { AvailableOffer } from "@/lib/store-api";
 import type { CartItem } from "@/lib/store-types";
 import { toast } from "sonner";
@@ -154,8 +156,11 @@ function pickBestOffer(
   return applicable[0];
 }
 
+const CART_SYNC_DEBOUNCE_MS = 800;
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { customerEmail: checkoutEmail } = useCheckoutEmail();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [couponCode, setCouponCode] = useState<string | null>(null);
@@ -167,12 +172,41 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   } | null>(null);
   const autoApplyInProgress = useRef(false);
   const [autoApplyRetry, setAutoApplyRetry] = useState(0);
+  const anonSignInTriggered = useRef(false);
+  const cartSyncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setItems(loadCart());
     setCouponCode(loadCoupon());
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated || sessionPending || items.length === 0) return;
+    if (session?.user) return;
+    if (anonSignInTriggered.current) return;
+    anonSignInTriggered.current = true;
+    authClient.signIn.anonymous().catch(() => {
+      anonSignInTriggered.current = false;
+    });
+  }, [hydrated, sessionPending, session, items.length]);
+
+  useEffect(() => {
+    if (!hydrated || !session?.user || items.length === 0) return;
+    if (cartSyncTimeoutRef.current) clearTimeout(cartSyncTimeoutRef.current);
+    cartSyncTimeoutRef.current = setTimeout(() => {
+      cartSyncTimeoutRef.current = null;
+      const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
+      saveCartToServer({
+        items,
+        couponCode: couponCode ?? undefined,
+        discountAmount: discountAmount > 0 ? discountAmount : undefined,
+      }).catch(() => {});
+    }, CART_SYNC_DEBOUNCE_MS);
+    return () => {
+      if (cartSyncTimeoutRef.current) clearTimeout(cartSyncTimeoutRef.current);
+    };
+  }, [hydrated, session?.user, items, couponCode, discountAmount]);
 
   useEffect(() => {
     getStoreCouponSettings()

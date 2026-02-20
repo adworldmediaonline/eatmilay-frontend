@@ -3,6 +3,7 @@ import type {
   ProductCategory,
   ProductCollection,
   OrderItem,
+  CartItem,
 } from "./store-types";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
@@ -411,4 +412,30 @@ export async function verifyPayment(payload: {
   const data = await res.json();
   if (!res.ok) throw new Error(data.error ?? "Payment verification failed");
   return data;
+}
+
+export async function saveCart(payload: {
+  items: CartItem[];
+  couponCode?: string | null;
+  discountAmount?: number;
+}): Promise<void> {
+  const res = await fetch(`${apiUrl}/api/store/cart`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to save cart");
+}
+
+export async function updateCartReminderEmail(email: string): Promise<void> {
+  const res = await fetch(`${apiUrl}/api/store/cart/reminder-email`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to update reminder email");
 }
