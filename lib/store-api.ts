@@ -107,6 +107,8 @@ export async function getUserOrderByNumber(orderNumber: string): Promise<{
   status: string;
   paymentMethod: string | null;
   paymentStatus: string | null;
+  razorpayPaymentId: string | null;
+  razorpayOrderId: string | null;
   subtotal: number;
   discountAmount: number;
   shippingAmount: number;

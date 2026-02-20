@@ -203,24 +203,38 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {(order.paymentMethod || order.paymentStatus) && (
+          {(order.paymentMethod || order.paymentStatus || order.razorpayPaymentId || order.razorpayOrderId) && (
             <div className="rounded-lg border bg-card p-6">
               <h3 className="font-semibold mb-2">Payment</h3>
               <dl className="space-y-1 text-sm">
                 {order.paymentMethod && (
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Method</dt>
-                    <dd>{PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</dd>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground shrink-0">Method</dt>
+                    <dd className="text-right">{PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</dd>
                   </div>
                 )}
                 {order.paymentStatus && (
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Status</dt>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground shrink-0">Status</dt>
                     <dd>
                       <Badge variant={order.paymentStatus === "completed" ? "default" : "secondary"} className="text-xs">
                         {PAYMENT_STATUS_LABELS[order.paymentStatus] ?? order.paymentStatus}
                       </Badge>
                     </dd>
+                  </div>
+                )}
+                {order.razorpayPaymentId && (
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:items-center pt-2 border-t">
+                    <dt className="text-muted-foreground shrink-0">Payment ID</dt>
+                    <dd className="font-mono text-xs break-all" title="Use this for support or refund requests">
+                      {order.razorpayPaymentId}
+                    </dd>
+                  </div>
+                )}
+                {order.razorpayOrderId && (
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:items-center">
+                    <dt className="text-muted-foreground shrink-0">Order ID</dt>
+                    <dd className="font-mono text-xs break-all">{order.razorpayOrderId}</dd>
                   </div>
                 )}
               </dl>
