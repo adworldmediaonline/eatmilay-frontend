@@ -1,6 +1,23 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
+
+async function getSession() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
+    const headersList = await headers();
+    const cookie = headersList.get("cookie") ?? "";
+    const res = await fetch(`${baseUrl}/api/me`, {
+      headers: cookie ? { cookie } : {},
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
 
 type ConfirmationPageProps = {
   searchParams: Promise<{ order?: string }>;
@@ -11,6 +28,11 @@ export default async function CheckoutConfirmationPage({
 }: ConfirmationPageProps) {
   const params = await searchParams;
   const orderNumber = params.order ?? "your order";
+  const session = await getSession();
+  const trackOrderHref =
+    session?.user && orderNumber !== "your order"
+      ? `/dashboard/orders/${encodeURIComponent(orderNumber)}`
+      : "/track-order";
 
   return (
     <StoreSection>
@@ -24,7 +46,7 @@ export default async function CheckoutConfirmationPage({
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Button asChild size="lg">
-            <Link href="/track-order">Track your order</Link>
+            <Link href={trackOrderHref}>Track your order</Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
             <Link href="/products">Continue shopping</Link>
