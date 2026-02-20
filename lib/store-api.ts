@@ -98,6 +98,31 @@ export async function getOrderTracking(
   return data;
 }
 
+export type AvailableOffer = {
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  minOrderAmount: number | null;
+  discountAmount: number;
+  description: string;
+};
+
+export async function getAvailableOffers(
+  subtotal: number,
+  items: Array<{ productId: string; quantity: number; unitPrice: number }>
+): Promise<AvailableOffer[]> {
+  const res = await fetch(`${apiUrl}/api/store/discounts/available`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subtotal, items }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to fetch offers");
+  }
+  return Array.isArray(data) ? data : [];
+}
+
 export type ValidateDiscountResult =
   | { valid: true; discountAmount: number; message?: string }
   | { valid: false; message: string };

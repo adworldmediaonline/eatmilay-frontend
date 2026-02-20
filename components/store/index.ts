@@ -17,4 +17,5 @@ export { CartProvider, useCart } from "./cart-provider";
 export { CartDrawer } from "./cart-drawer";
 export { CartItem } from "./cart-item";
 export { CheckoutForm } from "./checkout-form";
+export { AvailableOffers } from "./available-offers";
 export { CouponInput } from "./coupon-input";

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CartItem } from "./cart-item";
 import { PriceDisplay } from "./price-display";
+import { AvailableOffers } from "./available-offers";
 import { CouponInput } from "./coupon-input";
 import { useCart } from "./cart-provider";
 import {
@@ -490,9 +491,20 @@ export function CheckoutForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Coupon code</Label>
-            <CouponInput
+          <div className="space-y-4">
+            <AvailableOffers
+              subtotal={subtotal}
+              items={items.map((i) => ({
+                productId: i.productId,
+                quantity: i.quantity,
+                unitPrice: i.unitPrice,
+              }))}
+              onApplied={handleApplyCoupon}
+              appliedCode={couponCode}
+            />
+            <div className="space-y-2">
+              <Label>Coupon code</Label>
+              <CouponInput
               subtotal={subtotal}
               items={items.map((i) => ({
                 productId: i.productId,
@@ -504,6 +516,7 @@ export function CheckoutForm() {
               appliedAmount={discountAmount}
               onRemove={handleRemoveCoupon}
             />
+            </div>
           </div>
 
           <div className="space-y-2">
