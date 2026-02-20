@@ -129,7 +129,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
                     <p className="text-muted-foreground mb-2 px-3 text-xs font-semibold uppercase tracking-wider">
                       Account
                     </p>
-                    {user ? (
+                    {user && !isAnonymous ? (
                       <>
                         <Link
                           href="/dashboard"
@@ -211,7 +211,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
 
               <div className="h-5 w-px bg-border" />
 
-              {user ? (
+              {user && !isAnonymous ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
