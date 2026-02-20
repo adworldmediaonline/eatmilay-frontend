@@ -163,35 +163,47 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {order.trackingNumber && (
-            <div className="rounded-lg border bg-card p-6">
-              <div className="flex items-center gap-2 mb-2">
-                <TruckIcon className="size-5 text-muted-foreground" />
-                <h3 className="font-semibold">Tracking</h3>
-              </div>
-              <p className="text-muted-foreground text-sm mb-2">
-                {order.courierName && `${order.courierName} · `}
-                AWB: {order.trackingNumber}
-              </p>
-              {order.estimatedDelivery && (
-                <p className="text-muted-foreground text-sm mb-4">
-                  Estimated delivery: {order.estimatedDelivery}
-                </p>
-              )}
-              {order.trackingUrl && (
-                <Button asChild variant="outline" size="sm">
-                  <a
-                    href={order.trackingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Track on Shiprocket
-                    <ExternalLinkIcon className="ml-2 size-4" />
-                  </a>
-                </Button>
-              )}
+          <div className="rounded-lg border bg-card p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <TruckIcon className="size-5 text-muted-foreground" />
+              <h3 className="font-semibold">Tracking</h3>
             </div>
-          )}
+            {order.trackingNumber ? (
+              <>
+                <p className="text-muted-foreground text-sm mb-2">
+                  {order.courierName && `${order.courierName} · `}
+                  AWB: {order.trackingNumber}
+                </p>
+                {order.estimatedDelivery && (
+                  <p className="text-muted-foreground text-sm mb-4">
+                    Estimated delivery: {order.estimatedDelivery}
+                  </p>
+                )}
+                {order.trackingUrl && (
+                  <Button asChild variant="outline" size="sm">
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Track shipment
+                      <ExternalLinkIcon className="ml-2 size-4" />
+                    </a>
+                  </Button>
+                )}
+              </>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                {order.status === "delivered"
+                  ? "This order has been delivered."
+                  : order.status === "shipped" || order.status === "processing"
+                    ? "Tracking will be available once the shipment is dispatched. Check back soon."
+                    : order.status === "cancelled"
+                      ? "This order was cancelled."
+                      : "Your order is being prepared. Tracking details will appear here once the shipment is dispatched."}
+              </p>
+            )}
+          </div>
 
           {order.shippingAddress &&
             typeof order.shippingAddress === "object" &&
@@ -209,14 +221,6 @@ export default function OrderDetailPage() {
                     Phone: {(order.shippingAddress as ShippingAddressRecord).phone}
                   </p>
                 )}
-              </div>
-            )}
-
-          {!order.trackingNumber &&
-            (order.status === "shipped" || order.status === "processing") && (
-              <div className="rounded-lg border border-dashed p-4 text-muted-foreground text-sm">
-                <PackageIcon className="inline-block size-4 mr-2 align-middle" />
-                Tracking will be available once the shipment is dispatched.
               </div>
             )}
         </div>

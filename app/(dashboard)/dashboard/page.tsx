@@ -175,16 +175,16 @@ export default function DashboardPage() {
               </div>
             </Link>
             <Link
-              href="/track-order"
+              href="/dashboard/orders"
               className="flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-muted/30"
             >
               <div className="rounded-md bg-muted/50 p-2">
                 <TruckIcon className="size-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-semibold">Track order</p>
+                <p className="font-semibold">Track orders</p>
                 <p className="text-muted-foreground text-sm">
-                  Check delivery status
+                  View and track your orders
                 </p>
               </div>
             </Link>
