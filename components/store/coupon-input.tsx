@@ -17,6 +17,8 @@ type CouponInputProps = {
   onChangeClick?: () => void;
   /** When true and coupon applied, show input field for entering a different code (avoids redundant applied-state display) */
   forceShowInput?: boolean;
+  customerEmail?: string | null;
+  customerReferralCode?: string | null;
 };
 
 export function CouponInput({
@@ -28,6 +30,8 @@ export function CouponInput({
   onRemove,
   onChangeClick,
   forceShowInput = false,
+  customerEmail,
+  customerReferralCode,
 }: CouponInputProps) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +44,10 @@ export function CouponInput({
     setLoading(true);
     setError(null);
     try {
-      const result = await validateStoreDiscount(trimmed, subtotal, items);
+      const result = await validateStoreDiscount(trimmed, subtotal, items, {
+        customerEmail: customerEmail ?? undefined,
+        customerReferralCode: customerReferralCode ?? undefined,
+      });
       if (result.valid) {
         onApplied(result.discountAmount, trimmed.toUpperCase());
         setCode("");

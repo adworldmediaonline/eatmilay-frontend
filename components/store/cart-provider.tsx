@@ -14,6 +14,7 @@ import {
   getAvailableOffers,
   getStoreCouponSettings,
 } from "@/lib/store-api";
+import { getStoredReferralCode } from "./referral-tracker";
 import type { AvailableOffer } from "@/lib/store-api";
 import type { CartItem } from "@/lib/store-types";
 import { toast } from "sonner";
@@ -302,7 +303,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         productId: i.productId,
         quantity: i.quantity,
         unitPrice: i.unitPrice,
-      }))
+      })),
+      { customerReferralCode: getStoredReferralCode() ?? undefined }
     ).then((result) => {
       if (cancelled) return;
       if (result.valid) {
@@ -350,7 +352,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           return null;
         }
         setCouponSettings(settings);
-        return getAvailableOffers(subtotal, cartItems).then((offers) => ({
+        return getAvailableOffers(subtotal, cartItems, {
+          customerReferralCode: getStoredReferralCode() ?? undefined,
+        }).then((offers) => ({
           settings,
           offers,
         }));
@@ -365,7 +369,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             : pickBestOffer(offers, strategy);
         if (!best) return;
 
-        return validateStoreDiscount(best.code, subtotal, cartItems).then(
+        return validateStoreDiscount(best.code, subtotal, cartItems, {
+          customerReferralCode: getStoredReferralCode() ?? undefined,
+        }).then(
           (validationResult) => {
             if (validationResult.valid) {
               setCouponCode(best.code.trim().toUpperCase());

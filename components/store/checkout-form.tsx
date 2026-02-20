@@ -14,10 +14,12 @@ import {
   createStoreOrder,
   verifyPayment,
   getShippingRates,
+  getStoreShippingSettings,
   type ShippingAddress,
   type ShippingCourier,
 } from "@/lib/store-api";
 import { BRAND } from "@/lib/brand";
+import { getStoredReferralCode } from "./referral-tracker";
 import { toast } from "sonner";
 
 const PICKUP_POSTCODE =
@@ -57,6 +59,9 @@ export function CheckoutForm() {
   const [shippingCost, setShippingCost] = useState(0);
   const [isLoadingRates, setIsLoadingRates] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState<
+    number | null
+  >(null);
 
   const orderItems = items.map((i) => ({
     productId: i.productId,
@@ -68,7 +73,24 @@ export function CheckoutForm() {
   }));
 
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
-  const total = subtotalAfterDiscount + shippingCost;
+  const qualifiesForFreeShipping =
+    freeShippingThreshold != null &&
+    freeShippingThreshold > 0 &&
+    subtotalAfterDiscount >= freeShippingThreshold;
+  const effectiveShippingCost = qualifiesForFreeShipping ? 0 : shippingCost;
+  const total = subtotalAfterDiscount + effectiveShippingCost;
+  const gapToFreeShipping =
+    freeShippingThreshold != null &&
+    freeShippingThreshold > 0 &&
+    subtotalAfterDiscount < freeShippingThreshold
+      ? Math.ceil(freeShippingThreshold - subtotalAfterDiscount)
+      : null;
+
+  useEffect(() => {
+    getStoreShippingSettings()
+      .then((s) => setFreeShippingThreshold(s.freeShippingThreshold))
+      .catch(() => setFreeShippingThreshold(null));
+  }, []);
 
   const selectedCourier = shippingRates.find(
     (c) => c.courier_company_id === selectedCourierId
@@ -244,10 +266,11 @@ export function CheckoutForm() {
         discountAmount,
         total,
         couponCode,
+        customerReferralCode: getStoredReferralCode(),
         notes: notes.trim() || null,
         shippingAddress: address,
         paymentMethod,
-        shippingAmount: shippingCost,
+        shippingAmount: effectiveShippingCost,
         courierId: selectedCourierId ?? undefined,
         courierName: selectedCourier?.courier_name,
         estimatedDelivery: selectedCourier?.etd,
@@ -486,11 +509,22 @@ export function CheckoutForm() {
                   <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
-              {shippingCost > 0 && (
+              {effectiveShippingCost > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>₹{shippingCost.toFixed(2)}</span>
+                  <span>₹{effectiveShippingCost.toFixed(2)}</span>
                 </div>
+              )}
+              {qualifiesForFreeShipping && (
+                <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+              )}
+              {gapToFreeShipping != null && gapToFreeShipping > 0 && (
+                <p className="text-muted-foreground text-xs">
+                  Add ₹{gapToFreeShipping} more for free shipping
+                </p>
               )}
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
@@ -512,6 +546,8 @@ export function CheckoutForm() {
             appliedAmount={discountAmount}
             onRemove={removeCoupon}
             onRetryAutoApply={retryAutoApply}
+            customerEmail={address.email?.trim() || null}
+            customerReferralCode={getStoredReferralCode()}
           />
 
           <div className="space-y-2">
@@ -525,6 +561,13 @@ export function CheckoutForm() {
           </div>
         </div>
       </div>
+
+      {discountAmount > 0 && subtotal > 0 && (
+        <div className="rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-center text-sm text-green-700 dark:border-green-500/20 dark:bg-green-500/20 dark:text-green-400">
+          You&apos;re saving ₹{discountAmount.toFixed(2)} (
+          {Math.round((discountAmount / subtotal) * 100)}%)
+        </div>
+      )}
 
       <Button
         type="submit"

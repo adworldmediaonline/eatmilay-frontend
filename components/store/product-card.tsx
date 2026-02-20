@@ -15,13 +15,15 @@ import {
 } from "@/lib/stock-status";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/store-types";
+import type { ProductDiscount } from "@/lib/store-api";
 
 type ProductCardProps = {
   product: Product;
   variantIndex?: number;
+  discount?: ProductDiscount | null;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, discount }: ProductCardProps) {
   const { addItem } = useCart();
   const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
 
@@ -99,6 +101,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Badges */}
           <div className="absolute left-2 top-2 z-10 flex flex-col gap-1.5">
+            {discount && (
+              <span className="border-green-500/30 bg-green-500/10 text-green-700 dark:border-green-500/20 dark:bg-green-500/20 dark:text-green-400 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold uppercase tracking-wider">
+                {discount.type === "percentage"
+                  ? `${discount.value}% off`
+                  : discount.description}
+              </span>
+            )}
             {hasSale && (
               <span className="bg-destructive text-destructive-foreground inline-flex rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider">
                 Sale

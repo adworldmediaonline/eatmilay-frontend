@@ -21,6 +21,10 @@ type CouponSectionProps = {
   onRemove: () => void;
   onRetryAutoApply?: () => void;
   label?: string;
+  /** Pass when on checkout and user has entered email (for first-order discounts) */
+  customerEmail?: string | null;
+  /** Pass referral code from ?ref= (for referral discounts) */
+  customerReferralCode?: string | null;
 };
 
 export function CouponSection({
@@ -32,6 +36,8 @@ export function CouponSection({
   onRemove,
   onRetryAutoApply,
   label = "Coupon code",
+  customerEmail,
+  customerReferralCode,
 }: CouponSectionProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -141,6 +147,8 @@ export function CouponSection({
             onApplied={handleApplied}
             appliedCode={appliedCode}
             changeMode
+            customerEmail={customerEmail}
+            customerReferralCode={customerReferralCode}
           />
           <div className="space-y-2 min-w-0">
             <p className="text-muted-foreground shrink-0 text-sm font-medium">
@@ -157,6 +165,8 @@ export function CouponSection({
                 setOpen(false);
               }}
               forceShowInput
+              customerEmail={customerEmail}
+              customerReferralCode={customerReferralCode}
             />
           </div>
         </div>

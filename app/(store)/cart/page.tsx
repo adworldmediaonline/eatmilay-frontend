@@ -7,6 +7,7 @@ import { CartItem } from "@/components/store/cart-item";
 import { PriceDisplay } from "@/components/store/price-display";
 import { EmptyState } from "@/components/store/empty-state";
 import { CouponSection } from "@/components/store/coupon-section";
+import { getStoredReferralCode } from "@/components/store/referral-tracker";
 import { useCart } from "@/components/store/cart-provider";
 
 export default function CartPage() {
@@ -71,6 +72,7 @@ export default function CartPage() {
               appliedAmount={discountAmount}
               onRemove={removeCoupon}
               onRetryAutoApply={retryAutoApply}
+              customerReferralCode={getStoredReferralCode()}
             />
             <div className="mt-4 space-y-2 border-t pt-4">
               <div className="flex justify-between text-sm">

@@ -119,6 +119,51 @@ export type CouponBehaviorSettings = {
   showToastOnApply: boolean;
 };
 
+export type FeaturedOffer = { code: string; description: string } | null;
+
+export type ProductDiscount = {
+  code: string;
+  value: number;
+  type: "percentage" | "fixed";
+  description: string;
+};
+
+export async function getDiscountsForProducts(
+  productIds: string[]
+): Promise<Record<string, ProductDiscount>> {
+  if (productIds.length === 0) return {};
+  const res = await fetch(`${apiUrl}/api/store/discounts/for-products`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productIds }),
+    cache: "no-store",
+  });
+  if (!res.ok) return {};
+  const data = await res.json();
+  return typeof data === "object" && data !== null ? data : {};
+}
+
+export async function getFeaturedOffer(): Promise<FeaturedOffer> {
+  const res = await fetch(`${apiUrl}/api/store/discounts/featured`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data;
+}
+
+export type ShippingSettings = {
+  freeShippingThreshold: number | null;
+};
+
+export async function getStoreShippingSettings(): Promise<ShippingSettings> {
+  const res = await fetch(`${apiUrl}/api/store/settings/shipping`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return { freeShippingThreshold: null };
+  return res.json();
+}
+
 export async function getStoreCouponSettings(): Promise<CouponBehaviorSettings> {
   const res = await fetch(`${apiUrl}/api/store/settings/coupon`, {
     cache: "no-store",
@@ -129,12 +174,18 @@ export async function getStoreCouponSettings(): Promise<CouponBehaviorSettings> 
 
 export async function getAvailableOffers(
   subtotal: number,
-  items: Array<{ productId: string; quantity: number; unitPrice: number }>
+  items: Array<{ productId: string; quantity: number; unitPrice: number }>,
+  options?: { customerEmail?: string; customerReferralCode?: string }
 ): Promise<AvailableOffer[]> {
   const res = await fetch(`${apiUrl}/api/store/discounts/available`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ subtotal, items }),
+    body: JSON.stringify({
+      subtotal,
+      items,
+      customerEmail: options?.customerEmail ?? undefined,
+      customerReferralCode: options?.customerReferralCode ?? undefined,
+    }),
     cache: "no-store",
   });
   const data = await res.json();
@@ -151,12 +202,19 @@ export type ValidateDiscountResult =
 export async function validateStoreDiscount(
   code: string,
   subtotal: number,
-  items: Array<{ productId: string; quantity: number; unitPrice: number }>
+  items: Array<{ productId: string; quantity: number; unitPrice: number }>,
+  options?: { customerEmail?: string; customerReferralCode?: string }
 ): Promise<ValidateDiscountResult> {
   const res = await fetch(`${apiUrl}/api/store/discounts/validate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code, subtotal, items }),
+    body: JSON.stringify({
+      code,
+      subtotal,
+      items,
+      customerEmail: options?.customerEmail ?? undefined,
+      customerReferralCode: options?.customerReferralCode ?? undefined,
+    }),
   });
   const data = await res.json();
   if (!res.ok) {
@@ -201,6 +259,7 @@ export type CreateOrderPayload = {
   total: number;
   currency?: string;
   couponCode?: string | null;
+  customerReferralCode?: string | null;
   notes?: string | null;
   shippingAddress: ShippingAddress;
   paymentMethod: "razorpay" | "cod";

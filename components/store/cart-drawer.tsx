@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Sheet,
@@ -13,6 +14,7 @@ import { CartItem } from "./cart-item";
 import { PriceDisplay } from "./price-display";
 import { EmptyState } from "./empty-state";
 import { useCart } from "./cart-provider";
+import { getStoreShippingSettings } from "@/lib/store-api";
 
 type CartDrawerProps = {
   open: boolean;
@@ -29,8 +31,24 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     updateQuantity,
     removeItem,
   } = useCart();
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState<
+    number | null
+  >(null);
 
-  const total = Math.max(0, subtotal - discountAmount);
+  const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
+  const total = subtotalAfterDiscount;
+  const gapToFreeShipping =
+    freeShippingThreshold != null &&
+    freeShippingThreshold > 0 &&
+    subtotalAfterDiscount < freeShippingThreshold
+      ? Math.ceil(freeShippingThreshold - subtotalAfterDiscount)
+      : null;
+
+  useEffect(() => {
+    getStoreShippingSettings()
+      .then((s) => setFreeShippingThreshold(s.freeShippingThreshold))
+      .catch(() => setFreeShippingThreshold(null));
+  }, []);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -79,6 +97,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
               <span>Total</span>
               <PriceDisplay amount={total} />
             </div>
+            {gapToFreeShipping != null && gapToFreeShipping > 0 && (
+              <p className="text-muted-foreground text-xs">
+                Add ₹{gapToFreeShipping} more for free shipping
+              </p>
+            )}
             <Button asChild className="w-full" size="lg">
               <Link href="/checkout" onClick={() => onOpenChange(false)}>
                 Checkout

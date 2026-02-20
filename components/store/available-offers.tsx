@@ -13,6 +13,8 @@ type AvailableOffersProps = {
   appliedCode?: string | null;
   /** When true, show offers even when one is applied; show "Keep" for current offer */
   changeMode?: boolean;
+  customerEmail?: string | null;
+  customerReferralCode?: string | null;
 };
 
 export function AvailableOffers({
@@ -21,6 +23,8 @@ export function AvailableOffers({
   onApplied,
   appliedCode,
   changeMode = false,
+  customerEmail,
+  customerReferralCode,
 }: AvailableOffersProps) {
   const [offers, setOffers] = useState<AvailableOffer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +42,10 @@ export function AvailableOffers({
     setLoading(true);
     setError(null);
 
-    getAvailableOffers(subtotal, items)
+    getAvailableOffers(subtotal, items, {
+      customerEmail: customerEmail ?? undefined,
+      customerReferralCode: customerReferralCode ?? undefined,
+    })
       .then((data) => {
         if (!cancelled) setOffers(data);
       })
@@ -55,7 +62,7 @@ export function AvailableOffers({
     return () => {
       cancelled = true;
     };
-  }, [subtotal, items]);
+  }, [subtotal, items, customerEmail, customerReferralCode]);
 
   const handleApply = async (offer: AvailableOffer) => {
     if (appliedCode && !changeMode) return;
@@ -63,7 +70,10 @@ export function AvailableOffers({
     setApplyingCode(offer.code);
     setError(null);
     try {
-      const result = await validateStoreDiscount(offer.code, subtotal, items);
+      const result = await validateStoreDiscount(offer.code, subtotal, items, {
+        customerEmail: customerEmail ?? undefined,
+        customerReferralCode: customerReferralCode ?? undefined,
+      });
       if (result.valid) {
         onApplied(result.discountAmount, offer.code);
       } else {
