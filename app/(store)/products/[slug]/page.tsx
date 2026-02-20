@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { connection } from "next/server";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
+import { ProductReviews } from "@/components/store/product-reviews";
 import { getStoreProductBySlug } from "@/lib/store-api";
 import { ProductDetailClient } from "./product-detail-client";
 import {
@@ -119,6 +120,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         </div>
+
+        <ProductReviews productId={product.id} />
       </StoreContainer>
     </StoreSection>
   );
