@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { getUserOrderByNumber } from "@/lib/store-api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PriceDisplay } from "@/components/store/price-display";
+import { PriceDisplay, formatPrice } from "@/components/store/price-display";
 import { OrderDetailSkeleton } from "@/components/dashboard/order-detail-skeleton";
 import {
   PackageIcon,
@@ -47,6 +47,17 @@ const STATUS_LABELS: Record<string, string> = {
   shipped: "Shipped",
   delivered: "Delivered",
   cancelled: "Cancelled",
+};
+
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  razorpay: "Online Payment (Razorpay)",
+  cod: "Cash on Delivery",
+};
+
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  pending: "Pending",
+  completed: "Completed",
+  failed: "Failed",
 };
 
 function formatDate(iso: string) {
@@ -157,11 +168,71 @@ export default function OrderDetailPage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 pt-4 border-t flex justify-between font-semibold">
-              <span>Total</span>
-              <PriceDisplay amount={order.total} currency={order.currency} />
+            <div className="mt-4 space-y-2 border-t pt-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <PriceDisplay amount={order.subtotal ?? order.total} currency={order.currency} size="sm" />
+              </div>
+              {(order.discountAmount ?? 0) > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    Discount
+                    {order.couponCode && (
+                      <span className="ml-1 text-green-600 dark:text-green-500">
+                        ({order.couponCode})
+                      </span>
+                    )}
+                  </span>
+                  <span className="font-medium text-green-600 dark:text-green-500">
+                    -{formatPrice(order.discountAmount, order.currency)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Shipping</span>
+                {(order.shippingAmount ?? 0) > 0 ? (
+                  <PriceDisplay amount={order.shippingAmount} currency={order.currency} size="sm" />
+                ) : (
+                  <span className="text-muted-foreground">Free</span>
+                )}
+              </div>
+              <div className="flex justify-between font-semibold pt-2">
+                <span>Total</span>
+                <PriceDisplay amount={order.total} currency={order.currency} />
+              </div>
             </div>
           </div>
+
+          {(order.paymentMethod || order.paymentStatus) && (
+            <div className="rounded-lg border bg-card p-6">
+              <h3 className="font-semibold mb-2">Payment</h3>
+              <dl className="space-y-1 text-sm">
+                {order.paymentMethod && (
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Method</dt>
+                    <dd>{PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</dd>
+                  </div>
+                )}
+                {order.paymentStatus && (
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Status</dt>
+                    <dd>
+                      <Badge variant={order.paymentStatus === "completed" ? "default" : "secondary"} className="text-xs">
+                        {PAYMENT_STATUS_LABELS[order.paymentStatus] ?? order.paymentStatus}
+                      </Badge>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          )}
+
+          {order.notes && order.notes.trim() && (
+            <div className="rounded-lg border bg-card p-6">
+              <h3 className="font-semibold mb-2">Order notes</h3>
+              <p className="text-muted-foreground whitespace-pre-wrap text-sm">{order.notes}</p>
+            </div>
+          )}
 
           <div className="rounded-lg border bg-card p-6">
             <div className="flex items-center gap-2 mb-2">

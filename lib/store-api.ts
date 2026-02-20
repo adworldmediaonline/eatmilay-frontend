@@ -105,9 +105,16 @@ export async function getUserOrderByNumber(orderNumber: string): Promise<{
   id: string;
   orderNumber: string;
   status: string;
+  paymentMethod: string | null;
+  paymentStatus: string | null;
+  subtotal: number;
+  discountAmount: number;
+  shippingAmount: number;
+  couponCode: string | null;
   total: number;
   currency: string;
   items: OrderItem[];
+  notes: string | null;
   createdAt: string;
   trackingNumber: string | null;
   trackingUrl: string | null;
