@@ -127,6 +127,11 @@ export function CouponSection({
 
       <CollapsibleContent>
         <div className="space-y-4 overflow-hidden rounded-lg border border-border/80 bg-muted/20 p-4">
+          {customerEmail === null && (
+            <p className="text-muted-foreground text-xs">
+              Enter your email above to use first-order offers.
+            </p>
+          )}
           {!appliedCode &&
             onRetryAutoApply &&
             items.length > 0 &&

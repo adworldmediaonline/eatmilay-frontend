@@ -15,6 +15,7 @@ import {
   getStoreCouponSettings,
 } from "@/lib/store-api";
 import { getStoredReferralCode } from "./referral-tracker";
+import { useCheckoutEmail } from "./checkout-email-context";
 import type { AvailableOffer } from "@/lib/store-api";
 import type { CartItem } from "@/lib/store-types";
 import { toast } from "sonner";
@@ -154,6 +155,7 @@ function pickBestOffer(
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { customerEmail: checkoutEmail } = useCheckoutEmail();
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [couponCode, setCouponCode] = useState<string | null>(null);
@@ -304,7 +306,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         quantity: i.quantity,
         unitPrice: i.unitPrice,
       })),
-      { customerReferralCode: getStoredReferralCode() ?? undefined }
+      {
+        customerEmail: checkoutEmail?.trim() || undefined,
+        customerReferralCode: getStoredReferralCode() ?? undefined,
+      }
     ).then((result) => {
       if (cancelled) return;
       if (result.valid) {
@@ -318,7 +323,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [hydrated, couponCode, items, subtotal]);
+  }, [hydrated, couponCode, items, subtotal, checkoutEmail]);
 
   useEffect(() => {
     if (
@@ -353,6 +358,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
         setCouponSettings(settings);
         return getAvailableOffers(subtotal, cartItems, {
+          customerEmail: checkoutEmail?.trim() || undefined,
           customerReferralCode: getStoredReferralCode() ?? undefined,
         }).then((offers) => ({
           settings,
@@ -370,6 +376,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (!best) return;
 
         return validateStoreDiscount(best.code, subtotal, cartItems, {
+          customerEmail: checkoutEmail?.trim() || undefined,
           customerReferralCode: getStoredReferralCode() ?? undefined,
         }).then(
           (validationResult) => {
@@ -416,6 +423,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     subtotal,
     itemCount,
     autoApplyRetry,
+    checkoutEmail,
   ]);
 
   const value = useMemo(

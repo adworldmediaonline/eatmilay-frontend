@@ -20,6 +20,7 @@ import {
 } from "@/lib/store-api";
 import { BRAND } from "@/lib/brand";
 import { getStoredReferralCode } from "./referral-tracker";
+import { useCheckoutEmail } from "./checkout-email-context";
 import { toast } from "sonner";
 
 const PICKUP_POSTCODE =
@@ -39,6 +40,7 @@ const emptyAddress: ShippingAddress = {
 
 export function CheckoutForm() {
   const router = useRouter();
+  const { setCustomerEmail } = useCheckoutEmail();
   const {
     items,
     subtotal,
@@ -91,6 +93,12 @@ export function CheckoutForm() {
       .then((s) => setFreeShippingThreshold(s.freeShippingThreshold))
       .catch(() => setFreeShippingThreshold(null));
   }, []);
+
+  useEffect(() => {
+    const email = address.email?.trim() || null;
+    setCustomerEmail(email);
+    return () => setCustomerEmail(null);
+  }, [address.email, setCustomerEmail]);
 
   const selectedCourier = shippingRates.find(
     (c) => c.courier_company_id === selectedCourierId
