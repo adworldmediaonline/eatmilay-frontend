@@ -120,7 +120,9 @@ export type CouponBehaviorSettings = {
 };
 
 export async function getStoreCouponSettings(): Promise<CouponBehaviorSettings> {
-  const res = await fetch(`${apiUrl}/api/store/settings/coupon`);
+  const res = await fetch(`${apiUrl}/api/store/settings/coupon`, {
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error("Failed to fetch coupon settings");
   return res.json();
 }
@@ -133,6 +135,7 @@ export async function getAvailableOffers(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subtotal, items }),
+    cache: "no-store",
   });
   const data = await res.json();
   if (!res.ok) {
@@ -257,7 +260,13 @@ export async function createStoreOrder(
   });
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.error ?? "Failed to create order");
+    const message =
+      data.error === "COUPON_INVALID"
+        ? (data.message ?? data.error ?? "Failed to create order")
+        : (data.error ?? "Failed to create order");
+    const err = new Error(message) as Error & { code?: string };
+    err.code = data.error;
+    throw err;
   }
   return data;
 }

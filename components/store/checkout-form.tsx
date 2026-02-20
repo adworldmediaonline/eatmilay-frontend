@@ -266,7 +266,17 @@ export function CheckoutForm() {
         router.push(`/checkout/confirmation?order=${order.orderNumber}`);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to place order");
+      const message = err instanceof Error ? err.message : "Failed to place order";
+      const code = (err as Error & { code?: string }).code;
+      const isCouponError =
+        code === "COUPON_INVALID" ||
+        /expired|coupon|usage limit|min order|no longer active|not yet active|does not apply/i.test(
+          message
+        );
+      if (isCouponError && couponCode) {
+        removeCoupon();
+      }
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
