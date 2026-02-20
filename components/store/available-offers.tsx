@@ -95,8 +95,7 @@ export function AvailableOffers({
   if (offers.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
-        No offers available. Ensure coupons have passed their start date and are
-        enabled for auto-apply in admin.
+        No offers available.
       </p>
     );
   }
