@@ -14,13 +14,28 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LayoutDashboardIcon, CommandIcon } from "lucide-react";
+import { LayoutDashboardIcon, CommandIcon, PackageIcon, CircleUserRoundIcon, Settings2Icon } from "lucide-react";
 
 const userNavItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: <LayoutDashboardIcon />,
+  },
+  {
+    title: "My Orders",
+    url: "/dashboard/orders",
+    icon: <PackageIcon />,
+  },
+  {
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: <CircleUserRoundIcon />,
+  },
+  {
+    title: "Settings",
+    url: "/dashboard/settings",
+    icon: <Settings2Icon />,
   },
 ];
 

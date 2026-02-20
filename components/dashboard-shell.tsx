@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { AppSidebar } from "@/components/app-sidebar";
+import { DashboardBreadcrumb } from "@/components/dashboard/dashboard-breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { toast } from "sonner";
@@ -71,7 +72,10 @@ export function DashboardShell({
             }}
             onSignOut={handleSignOut}
           />
-          <div className="flex flex-1 flex-col">{children}</div>
+          <div className="flex flex-1 flex-col">
+            <DashboardBreadcrumb />
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </SessionContext.Provider>

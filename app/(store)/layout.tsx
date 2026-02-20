@@ -1,5 +1,6 @@
 import { CartProvider } from "@/components/store/cart-provider";
 import { CheckoutEmailProvider } from "@/components/store/checkout-email-context";
+import { StoreSessionProvider } from "@/components/store/store-session-context";
 import { StoreHeader } from "@/components/store/store-header";
 import { StoreFooter } from "@/components/store/store-footer";
 import { PromoBanner } from "@/components/store/promo-banner";
@@ -32,16 +33,18 @@ export default async function StoreLayout({
   const session = await getSession();
 
   return (
-    <CheckoutEmailProvider>
-      <CartProvider>
-        <ReferralTracker />
+    <StoreSessionProvider session={session}>
+      <CheckoutEmailProvider>
+        <CartProvider>
+          <ReferralTracker />
       <div className="flex min-h-svh flex-col">
         <PromoBanner />
         <StoreHeader user={session?.user} />
         <main className="flex-1">{children}</main>
         <StoreFooter />
       </div>
-      </CartProvider>
-    </CheckoutEmailProvider>
+        </CartProvider>
+      </CheckoutEmailProvider>
+    </StoreSessionProvider>
   );
 }

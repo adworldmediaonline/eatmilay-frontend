@@ -125,13 +125,13 @@ export function SiteHeader({ user, onSignOut }: SiteHeaderProps) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center gap-2">
+                  <Link href="/dashboard/profile" className="flex items-center gap-2">
                     <CircleUserRoundIcon className="size-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center gap-2">
+                  <Link href="/dashboard/settings" className="flex items-center gap-2">
                     <Settings2Icon className="size-4" />
                     Settings
                   </Link>

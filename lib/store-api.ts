@@ -82,6 +82,64 @@ export type OrderTrackingResult = {
   shiprocketError: string | null;
 };
 
+export type UserOrder = {
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  currency: string;
+  itemCount: number;
+  createdAt: string;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  courierName: string | null;
+  estimatedDelivery: string | null;
+};
+
+export type GetUserOrdersResponse = {
+  items: UserOrder[];
+  total: number;
+};
+
+export async function getUserOrderByNumber(orderNumber: string): Promise<{
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  currency: string;
+  items: OrderItem[];
+  createdAt: string;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  courierName: string | null;
+  estimatedDelivery: string | null;
+  shippingAddress: Record<string, unknown> | null;
+}> {
+  const res = await fetch(
+    `${apiUrl}/api/store/user/orders/by-number/${encodeURIComponent(orderNumber)}`,
+    { credentials: "include" }
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error ?? "Failed to fetch order");
+  return data;
+}
+
+export async function getUserOrders(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<GetUserOrdersResponse> {
+  const search = new URLSearchParams();
+  if (params?.limit != null) search.set("limit", String(params.limit));
+  if (params?.offset != null) search.set("offset", String(params.offset));
+  const query = search.toString();
+  const res = await fetch(`${apiUrl}/api/store/user/orders${query ? `?${query}` : ""}`, {
+    credentials: "include",
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error ?? "Failed to fetch orders");
+  return data;
+}
+
 export async function getOrderTracking(
   orderNumber: string,
   email: string

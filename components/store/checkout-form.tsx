@@ -21,6 +21,7 @@ import {
 import { BRAND } from "@/lib/brand";
 import { getStoredReferralCode } from "./referral-tracker";
 import { useCheckoutEmail } from "./checkout-email-context";
+import { useStoreSession } from "./store-session-context";
 import { toast } from "sonner";
 
 const PICKUP_POSTCODE =
@@ -40,6 +41,7 @@ const emptyAddress: ShippingAddress = {
 
 export function CheckoutForm() {
   const router = useRouter();
+  const session = useStoreSession();
   const { setCustomerEmail } = useCheckoutEmail();
   const {
     items,
@@ -269,6 +271,7 @@ export function CheckoutForm() {
       const order = await createStoreOrder({
         customerEmail: address.email.trim(),
         customerName: address.fullName.trim() || null,
+        customerId: session?.user?.id ?? null,
         items: orderItems,
         subtotal,
         discountAmount,
