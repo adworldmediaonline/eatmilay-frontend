@@ -20,7 +20,17 @@ type CartDrawerProps = {
 };
 
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
-  const { items, itemCount, subtotal, updateQuantity, removeItem } = useCart();
+  const {
+    items,
+    itemCount,
+    subtotal,
+    discountAmount,
+    couponCode,
+    updateQuantity,
+    removeItem,
+  } = useCart();
+
+  const total = Math.max(0, subtotal - discountAmount);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -56,6 +66,18 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             <div className="flex w-full items-center justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
               <PriceDisplay amount={subtotal} />
+            </div>
+            {discountAmount > 0 && (
+              <div className="flex w-full items-center justify-between text-sm text-green-600 dark:text-green-400">
+                <span>
+                  Discount{couponCode ? ` (${couponCode})` : ""}
+                </span>
+                <span>-₹{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex w-full items-center justify-between font-semibold">
+              <span>Total</span>
+              <PriceDisplay amount={total} />
             </div>
             <Button asChild className="w-full" size="lg">
               <Link href="/checkout" onClick={() => onOpenChange(false)}>

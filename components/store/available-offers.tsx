@@ -11,6 +11,8 @@ type AvailableOffersProps = {
   items: Array<{ productId: string; quantity: number; unitPrice: number }>;
   onApplied: (discountAmount: number, code: string) => void;
   appliedCode?: string | null;
+  /** When true, show offers even when one is applied; show "Keep" for current offer */
+  changeMode?: boolean;
 };
 
 export function AvailableOffers({
@@ -18,6 +20,7 @@ export function AvailableOffers({
   items,
   onApplied,
   appliedCode,
+  changeMode = false,
 }: AvailableOffersProps) {
   const [offers, setOffers] = useState<AvailableOffer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +58,8 @@ export function AvailableOffers({
   }, [subtotal, items]);
 
   const handleApply = async (offer: AvailableOffer) => {
-    if (appliedCode) return;
+    if (appliedCode && !changeMode) return;
+    if (changeMode && appliedCode && offer.code === appliedCode) return;
     setApplyingCode(offer.code);
     setError(null);
     try {
@@ -72,7 +76,7 @@ export function AvailableOffers({
     }
   };
 
-  if (appliedCode) return null;
+  if (appliedCode && !changeMode) return null;
   if (loading) {
     return (
       <div className="space-y-2">
@@ -88,38 +92,89 @@ export function AvailableOffers({
       </div>
     );
   }
-  if (offers.length === 0) return null;
+  if (offers.length === 0) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        No offers available. Ensure coupons have passed their start date and are
+        enabled for auto-apply in admin.
+      </p>
+    );
+  }
 
   return (
-    <div className="space-y-2">
-      <p className="text-muted-foreground text-sm font-medium">
+    <div className="min-w-0 space-y-2">
+      <p className="text-muted-foreground shrink-0 text-sm font-medium">
         Available offers
       </p>
-      <div className="space-y-2">
+      <div className="min-w-0 space-y-2">
         {offers.map((offer) => (
           <div
             key={offer.code}
-            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3"
+            className="flex min-w-0 items-center justify-between gap-3 overflow-hidden rounded-lg border border-border bg-muted/30 p-3"
           >
             <div className="flex min-w-0 items-center gap-2">
               <TagIcon className="size-4 shrink-0 text-muted-foreground" />
-              <div className="min-w-0">
-                <p className="text-sm font-medium">{offer.description}</p>
+              <div className="min-w-0 overflow-hidden">
+                <p className="truncate text-sm font-medium">{offer.description}</p>
+                {offer.locked && offer.gapAmount != null && (
+                  <p className="text-muted-foreground mt-0.5 text-xs">
+                    Add ₹{Math.ceil(offer.gapAmount)} more to unlock
+                  </p>
+                )}
+                {!offer.locked && offer.expiresAt && (() => {
+                  const days = Math.ceil(
+                    (new Date(offer.expiresAt).getTime() - Date.now()) /
+                      (1000 * 60 * 60 * 24)
+                  );
+                  if (days > 0 && days <= 7) {
+                    return (
+                      <p className="text-muted-foreground mt-0.5 text-xs">
+                        Expires in {days} {days === 1 ? "day" : "days"}
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
+                {!offer.locked &&
+                  offer.usesLeft != null &&
+                  offer.usesLeft > 0 &&
+                  offer.usesLeft < 20 && (
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      Only {offer.usesLeft} uses left
+                    </p>
+                  )}
               </div>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="shrink-0 border-green-500/40 bg-green-500/10 text-green-700 hover:bg-green-500/20 hover:text-green-800 dark:border-green-500/30 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30"
-              onClick={() => handleApply(offer)}
-              disabled={applyingCode !== null}
-            >
-              {applyingCode === offer.code ? (
-                <Loader2Icon className="size-4 animate-spin" />
-              ) : (
-                "Apply"
-              )}
-            </Button>
+            {offer.locked ? (
+              <span className="text-muted-foreground shrink-0 text-sm">
+                Add ₹{offer.gapAmount != null ? Math.ceil(offer.gapAmount) : 0}{" "}
+                more
+              </span>
+            ) : changeMode && appliedCode && offer.code === appliedCode ? (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => handleApply(offer)}
+                disabled
+              >
+                Current
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0 border-green-500/40 bg-green-500/10 text-green-700 hover:bg-green-500/20 hover:text-green-800 dark:border-green-500/30 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30"
+                onClick={() => handleApply(offer)}
+                disabled={applyingCode !== null}
+              >
+                {applyingCode === offer.code ? (
+                  <Loader2Icon className="size-4 animate-spin" />
+                ) : (
+                  "Apply"
+                )}
+              </Button>
+            )}
           </div>
         ))}
       </div>

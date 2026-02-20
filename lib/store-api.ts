@@ -105,7 +105,25 @@ export type AvailableOffer = {
   minOrderAmount: number | null;
   discountAmount: number;
   description: string;
+  allowAutoApply?: boolean;
+  createdAt?: string | null;
+  locked?: boolean;
+  gapAmount?: number;
+  expiresAt?: string | null;
+  usesLeft?: number | null;
 };
+
+export type CouponBehaviorSettings = {
+  autoApply: boolean;
+  autoApplyStrategy: "best_savings" | "first_created" | "highest_percentage" | "customer_choice";
+  showToastOnApply: boolean;
+};
+
+export async function getStoreCouponSettings(): Promise<CouponBehaviorSettings> {
+  const res = await fetch(`${apiUrl}/api/store/settings/coupon`);
+  if (!res.ok) throw new Error("Failed to fetch coupon settings");
+  return res.json();
+}
 
 export async function getAvailableOffers(
   subtotal: number,

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { validateStoreDiscount } from "@/lib/store-api";
+import { CopyIcon } from "lucide-react";
 
 type CouponInputProps = {
   subtotal: number;
@@ -13,6 +14,9 @@ type CouponInputProps = {
   appliedCode?: string | null;
   appliedAmount?: number;
   onRemove?: () => void;
+  onChangeClick?: () => void;
+  /** When true and coupon applied, show input field for entering a different code (avoids redundant applied-state display) */
+  forceShowInput?: boolean;
 };
 
 export function CouponInput({
@@ -22,10 +26,13 @@ export function CouponInput({
   appliedCode,
   appliedAmount,
   onRemove,
+  onChangeClick,
+  forceShowInput = false,
 }: CouponInputProps) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleValidate = async () => {
     const trimmed = code.trim();
@@ -47,9 +54,25 @@ export function CouponInput({
     }
   };
 
-  if (appliedCode && appliedAmount != null && appliedAmount > 0) {
+  if (
+    appliedCode &&
+    appliedAmount != null &&
+    appliedAmount > 0 &&
+    !forceShowInput
+  ) {
     const savingsPercent =
       subtotal > 0 ? Math.round((appliedAmount / subtotal) * 100) : 0;
+
+    const handleCopy = async () => {
+      try {
+        await navigator.clipboard.writeText(appliedCode);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // ignore
+      }
+    };
+
     return (
       <div className="flex items-center justify-between rounded-lg border border-green-500/30 bg-green-500/5 p-3">
         <div>
@@ -63,19 +86,36 @@ export function CouponInput({
             Save {savingsPercent}%
           </Badge>
         </div>
-        {onRemove && (
-          <Button variant="ghost" size="sm" onClick={onRemove}>
-            Remove
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopy}
+            className="shrink-0"
+          >
+            <CopyIcon className="size-4" />
+            {copied ? "Copied" : "Copy"}
           </Button>
-        )}
+          {onChangeClick && (
+            <Button variant="ghost" size="sm" onClick={onChangeClick}>
+              Change
+            </Button>
+          )}
+          {onRemove && (
+            <Button variant="ghost" size="sm" onClick={onRemove}>
+              Remove
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex gap-2">
+    <div className="min-w-0 space-y-2">
+      <div className="flex min-w-0 gap-2">
         <Input
+          className="min-w-0 flex-1"
           placeholder="Coupon code"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
@@ -84,6 +124,7 @@ export function CouponInput({
         />
         <Button
           variant="outline"
+          className="shrink-0"
           onClick={handleValidate}
           disabled={loading || !code.trim()}
         >

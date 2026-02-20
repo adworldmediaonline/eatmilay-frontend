@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CartItem } from "./cart-item";
 import { PriceDisplay } from "./price-display";
-import { AvailableOffers } from "./available-offers";
-import { CouponInput } from "./coupon-input";
+import { CouponSection } from "./coupon-section";
 import { useCart } from "./cart-provider";
 import {
   createStoreOrder,
@@ -38,11 +37,20 @@ const emptyAddress: ShippingAddress = {
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { items, subtotal, updateQuantity, removeItem, clearCart } = useCart();
+  const {
+    items,
+    subtotal,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    couponCode,
+    discountAmount,
+    applyCoupon,
+    removeCoupon,
+    retryAutoApply,
+  } = useCart();
   const [address, setAddress] = useState<ShippingAddress>(emptyAddress);
   const [notes, setNotes] = useState("");
-  const [couponCode, setCouponCode] = useState<string | null>(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const paymentMethod = "razorpay" as const;
   const [shippingRates, setShippingRates] = useState<ShippingCourier[]>([]);
   const [selectedCourierId, setSelectedCourierId] = useState<number | null>(null);
@@ -112,16 +120,6 @@ export function CheckoutForm() {
 
     return () => clearTimeout(timeoutId);
   }, [address.postalCode, calculateWeight]);
-
-  const handleApplyCoupon = (amount: number, code: string) => {
-    setDiscountAmount(amount);
-    setCouponCode(code);
-  };
-
-  const handleRemoveCoupon = () => {
-    setDiscountAmount(0);
-    setCouponCode(null);
-  };
 
   const openRazorpayCheckout = useCallback(
     (order: { id: string; razorpayOrderId: string; orderNumber: string }) => {
@@ -491,33 +489,20 @@ export function CheckoutForm() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <AvailableOffers
-              subtotal={subtotal}
-              items={items.map((i) => ({
-                productId: i.productId,
-                quantity: i.quantity,
-                unitPrice: i.unitPrice,
-              }))}
-              onApplied={handleApplyCoupon}
-              appliedCode={couponCode}
-            />
-            <div className="space-y-2">
-              <Label>Coupon code</Label>
-              <CouponInput
-              subtotal={subtotal}
-              items={items.map((i) => ({
-                productId: i.productId,
-                quantity: i.quantity,
-                unitPrice: i.unitPrice,
-              }))}
-              onApplied={handleApplyCoupon}
-              appliedCode={couponCode}
-              appliedAmount={discountAmount}
-              onRemove={handleRemoveCoupon}
-            />
-            </div>
-          </div>
+          <CouponSection
+            label="Coupon code"
+            subtotal={subtotal}
+            items={items.map((i) => ({
+              productId: i.productId,
+              quantity: i.quantity,
+              unitPrice: i.unitPrice,
+            }))}
+            onApplied={applyCoupon}
+            appliedCode={couponCode}
+            appliedAmount={discountAmount}
+            onRemove={removeCoupon}
+            onRetryAutoApply={retryAutoApply}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
