@@ -30,7 +30,8 @@ async function getCollection(slug: string) {
 
 async function getCollectionProducts(collectionId: string) {
   await connection();
-  return getStoreProducts({ collectionId, limit: 50 });
+  const { items } = await getStoreProducts({ collectionId, limit: 50 });
+  return items;
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {

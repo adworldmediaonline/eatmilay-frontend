@@ -8,21 +8,59 @@ import type {
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
 
-export async function getStoreProducts(params?: {
+export type GetStoreProductsParams = {
   categoryId?: string;
   collectionId?: string;
+  search?: string;
+  sortBy?: "price" | "name" | "updatedAt" | "newest";
+  sortOrder?: "asc" | "desc";
+  minPrice?: number;
+  maxPrice?: number;
+  tags?: string;
+  vendor?: string;
+  productType?: "simple" | "variable" | "bundle";
+  inStock?: boolean;
   limit?: number;
   offset?: number;
-}): Promise<Product[]> {
+};
+
+export type GetStoreProductsResponse = {
+  items: Product[];
+  total: number;
+};
+
+export async function getStoreProducts(
+  params?: GetStoreProductsParams
+): Promise<GetStoreProductsResponse> {
   const search = new URLSearchParams();
   if (params?.categoryId) search.set("categoryId", params.categoryId);
   if (params?.collectionId) search.set("collectionId", params.collectionId);
-  if (params?.limit) search.set("limit", String(params.limit));
-  if (params?.offset) search.set("offset", String(params.offset));
+  if (params?.search?.trim()) search.set("search", params.search.trim());
+  if (params?.sortBy) search.set("sortBy", params.sortBy);
+  if (params?.sortOrder) search.set("sortOrder", params.sortOrder);
+  if (params?.minPrice != null) search.set("minPrice", String(params.minPrice));
+  if (params?.maxPrice != null) search.set("maxPrice", String(params.maxPrice));
+  if (params?.tags?.trim()) search.set("tags", params.tags.trim());
+  if (params?.vendor?.trim()) search.set("vendor", params.vendor.trim());
+  if (params?.productType) search.set("productType", params.productType);
+  if (params?.inStock === true) search.set("inStock", "true");
+  if (params?.limit != null) search.set("limit", String(params.limit));
+  if (params?.offset != null) search.set("offset", String(params.offset));
   const query = search.toString();
   const url = `${apiUrl}/api/store/products${query ? `?${query}` : ""}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json();
+}
+
+export type ProductFacets = {
+  tags: string[];
+  vendors: string[];
+};
+
+export async function getStoreProductFacets(): Promise<ProductFacets> {
+  const res = await fetch(`${apiUrl}/api/store/products/facets`);
+  if (!res.ok) throw new Error("Failed to fetch product facets");
   return res.json();
 }
 

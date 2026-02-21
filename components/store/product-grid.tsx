@@ -11,12 +11,16 @@ type ProductGridProps = {
   products: Product[];
   emptyTitle?: string;
   emptyDescription?: string;
+  emptyHref?: string;
+  emptyLinkText?: string;
 };
 
 export function ProductGrid({
   products,
   emptyTitle = "No products yet",
   emptyDescription = "Check back soon for new arrivals.",
+  emptyHref = "/products",
+  emptyLinkText = "Browse all products",
 }: ProductGridProps) {
   const [discounts, setDiscounts] = useState<Record<string, ProductDiscount>>({});
 
@@ -33,8 +37,8 @@ export function ProductGrid({
       <EmptyState
         title={emptyTitle}
         description={emptyDescription}
-        href="/products"
-        linkText="Browse all products"
+        href={emptyHref}
+        linkText={emptyLinkText}
       />
     );
   }
