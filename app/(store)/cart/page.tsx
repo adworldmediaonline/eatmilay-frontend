@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StoreContainer, StoreSection } from "@/components/store/store-layout";
 import { CartItem } from "@/components/store/cart-item";
 import { PriceDisplay } from "@/components/store/price-display";
@@ -9,8 +11,17 @@ import { EmptyState } from "@/components/store/empty-state";
 import { CouponSection } from "@/components/store/coupon-section";
 import { getStoredReferralCode } from "@/components/store/referral-tracker";
 import { useCart } from "@/components/store/cart-provider";
+import { authClient } from "@/lib/auth-client";
+import { updateCartReminderEmail } from "@/lib/store-api";
+import { toast } from "sonner";
+
+function isAnonymousEmail(email: string | null | undefined): boolean {
+  if (!email) return true;
+  return /^temp[-.]?[^@]*@/i.test(email) || email.includes("temp@");
+}
 
 export default function CartPage() {
+  const { data: session } = authClient.useSession();
   const {
     items,
     subtotal,
@@ -22,8 +33,12 @@ export default function CartPage() {
     removeCoupon,
     retryAutoApply,
   } = useCart();
+  const [reminderEmail, setReminderEmail] = useState("");
+  const [reminderSaving, setReminderSaving] = useState(false);
+  const [reminderSaved, setReminderSaved] = useState(false);
 
   const total = Math.max(0, subtotal - discountAmount);
+  const isAnonymous = isAnonymousEmail(session?.user?.email);
 
   if (items.length === 0) {
     return (
@@ -93,6 +108,43 @@ export default function CartPage() {
             <Button asChild size="lg" className="mt-6 w-full">
               <Link href="/checkout">Proceed to checkout</Link>
             </Button>
+            {isAnonymous && !reminderSaved && (
+              <div className="mt-6 rounded-lg border border-dashed border-border/60 bg-muted/30 p-4">
+                <p className="text-muted-foreground mb-2 text-sm">
+                  Get a reminder if you leave
+                </p>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const email = reminderEmail.trim();
+                    if (!email) return;
+                    setReminderSaving(true);
+                    try {
+                      await updateCartReminderEmail(email);
+                      setReminderSaved(true);
+                      toast.success("We'll send you a reminder if you leave");
+                    } catch {
+                      toast.error("Failed to save. Try again.");
+                    } finally {
+                      setReminderSaving(false);
+                    }
+                  }}
+                  className="flex gap-2"
+                >
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={reminderEmail}
+                    onChange={(e) => setReminderEmail(e.target.value)}
+                    className="flex-1"
+                    disabled={reminderSaving}
+                  />
+                  <Button type="submit" size="sm" disabled={reminderSaving || !reminderEmail.trim()}>
+                    {reminderSaving ? "Saving..." : "Save"}
+                  </Button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </StoreContainer>

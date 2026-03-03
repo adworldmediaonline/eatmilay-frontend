@@ -32,7 +32,8 @@ async function getCategory(slug: string) {
 
 async function getCategoryProducts(categoryId: string) {
   await connection();
-  return getStoreProducts({ categoryId, limit: 50 });
+  const { items } = await getStoreProducts({ categoryId, limit: 50 });
+  return items;
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {

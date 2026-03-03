@@ -15,7 +15,8 @@ import {
 
 async function FeaturedProducts() {
   await connection();
-  const products = await getStoreProducts({ limit: 8 });
+  const { items } = await getStoreProducts({ limit: 8 });
+  const products = items;
   return (
     <section className="space-y-4 sm:space-y-6">
       <div className="flex flex-row flex-wrap items-center justify-between gap-2">

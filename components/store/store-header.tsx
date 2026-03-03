@@ -57,6 +57,11 @@ const navLinks = [
   { href: "/collections", label: "Collections", icon: LayersIcon },
 ];
 
+function isAnonymousEmail(email: string | null | undefined): boolean {
+  if (!email || typeof email !== "string") return true;
+  return /^temp[-.]?[^@]*@/i.test(email) || email.includes("temp@");
+}
+
 export function StoreHeader({ user }: StoreHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -64,7 +69,8 @@ export function StoreHeader({ user }: StoreHeaderProps) {
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const displayName = user?.name ?? "Account";
+  const isAnonymous = user?.email ? isAnonymousEmail(user.email) : false;
+  const displayName = isAnonymous ? "Account" : (user?.name ?? "Account");
   const initials = displayName.slice(0, 2).toUpperCase();
 
   const isActive = (href: string) => {
@@ -123,7 +129,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
                     <p className="text-muted-foreground mb-2 px-3 text-xs font-semibold uppercase tracking-wider">
                       Account
                     </p>
-                    {user ? (
+                    {user && !isAnonymous ? (
                       <>
                         <Link
                           href="/dashboard"
@@ -205,7 +211,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
 
               <div className="h-5 w-px bg-border" />
 
-              {user ? (
+              {user && !isAnonymous ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -235,7 +241,7 @@ export function StoreHeader({ user }: StoreHeaderProps) {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col gap-0.5">
                         <p className="text-sm font-medium">{displayName}</p>
-                        {user.email && (
+                        {user.email && !isAnonymous && (
                           <p className="text-muted-foreground truncate text-xs">
                             {user.email}
                           </p>

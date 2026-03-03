@@ -1,7 +1,7 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { emailOTPClient } from "better-auth/client/plugins";
+import { emailOTPClient, anonymousClient } from "better-auth/client/plugins";
 
 // Client: same-origin (proxied) for first-party cookies. SSR/build: full backend URL.
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
@@ -15,5 +15,5 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: "include",
   },
-  plugins: [emailOTPClient()],
+  plugins: [emailOTPClient(), anonymousClient()],
 });

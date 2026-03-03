@@ -3,25 +3,64 @@ import type {
   ProductCategory,
   ProductCollection,
   OrderItem,
+  CartItem,
 } from "./store-types";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3005";
 
-export async function getStoreProducts(params?: {
+export type GetStoreProductsParams = {
   categoryId?: string;
   collectionId?: string;
+  search?: string;
+  sortBy?: "price" | "name" | "updatedAt" | "newest";
+  sortOrder?: "asc" | "desc";
+  minPrice?: number;
+  maxPrice?: number;
+  tags?: string;
+  vendor?: string;
+  productType?: "simple" | "variable" | "bundle";
+  inStock?: boolean;
   limit?: number;
   offset?: number;
-}): Promise<Product[]> {
+};
+
+export type GetStoreProductsResponse = {
+  items: Product[];
+  total: number;
+};
+
+export async function getStoreProducts(
+  params?: GetStoreProductsParams
+): Promise<GetStoreProductsResponse> {
   const search = new URLSearchParams();
   if (params?.categoryId) search.set("categoryId", params.categoryId);
   if (params?.collectionId) search.set("collectionId", params.collectionId);
-  if (params?.limit) search.set("limit", String(params.limit));
-  if (params?.offset) search.set("offset", String(params.offset));
+  if (params?.search?.trim()) search.set("search", params.search.trim());
+  if (params?.sortBy) search.set("sortBy", params.sortBy);
+  if (params?.sortOrder) search.set("sortOrder", params.sortOrder);
+  if (params?.minPrice != null) search.set("minPrice", String(params.minPrice));
+  if (params?.maxPrice != null) search.set("maxPrice", String(params.maxPrice));
+  if (params?.tags?.trim()) search.set("tags", params.tags.trim());
+  if (params?.vendor?.trim()) search.set("vendor", params.vendor.trim());
+  if (params?.productType) search.set("productType", params.productType);
+  if (params?.inStock === true) search.set("inStock", "true");
+  if (params?.limit != null) search.set("limit", String(params.limit));
+  if (params?.offset != null) search.set("offset", String(params.offset));
   const query = search.toString();
   const url = `${apiUrl}/api/store/products${query ? `?${query}` : ""}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json();
+}
+
+export type ProductFacets = {
+  tags: string[];
+  vendors: string[];
+};
+
+export async function getStoreProductFacets(): Promise<ProductFacets> {
+  const res = await fetch(`${apiUrl}/api/store/products/facets`);
+  if (!res.ok) throw new Error("Failed to fetch product facets");
   return res.json();
 }
 
@@ -410,5 +449,156 @@ export async function verifyPayment(payload: {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error ?? "Payment verification failed");
+  return data;
+}
+
+export async function saveCart(payload: {
+  items: CartItem[];
+  couponCode?: string | null;
+  discountAmount?: number;
+}): Promise<void> {
+  const res = await fetch(`${apiUrl}/api/store/cart`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to save cart");
+}
+
+export async function updateCartReminderEmail(email: string): Promise<void> {
+  const res = await fetch(`${apiUrl}/api/store/cart/reminder-email`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to update reminder email");
+}
+
+export type ProductReview = {
+  id: string;
+  customerName: string;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  verifiedPurchase: boolean;
+  createdAt: string;
+};
+
+export type ProductReviewsResponse = {
+  items: ProductReview[];
+  nextCursor: string | null;
+  averageRating: number | null;
+  totalCount: number;
+};
+
+export async function getProductReviews(
+  productId: string,
+  params?: { cursor?: string; limit?: number }
+): Promise<ProductReviewsResponse> {
+  const search = new URLSearchParams();
+  if (params?.cursor) search.set("cursor", params.cursor);
+  if (params?.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  const res = await fetch(
+    `${apiUrl}/api/store/reviews/product/${productId}${query ? `?${query}` : ""}`
+  );
+  if (!res.ok) throw new Error("Failed to fetch reviews");
+  return res.json();
+}
+
+export type CanReviewProductResponse = {
+  canReview: boolean;
+  reason: "sign_in" | "purchase_required" | "create" | "update";
+  orderId?: string;
+};
+
+export async function canReviewProduct(
+  productId: string
+): Promise<CanReviewProductResponse> {
+  const res = await fetch(
+    `${apiUrl}/api/store/reviews/can-review-product/${productId}`,
+    { credentials: "include" }
+  );
+  if (!res.ok) throw new Error("Failed to check review eligibility");
+  return res.json();
+}
+
+export async function submitProductReview(payload: {
+  productId: string;
+  orderId: string;
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+}): Promise<{ id: string; message: string }> {
+  const res = await fetch(`${apiUrl}/api/store/reviews/product`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to submit review");
+  return data;
+}
+
+export type CanReviewOrderResponse = {
+  canReview: boolean;
+  reason:
+    | "sign_in"
+    | "not_found"
+    | "not_delivered"
+    | "already_reviewed";
+  orderId?: string;
+};
+
+export async function canReviewOrder(
+  orderNumber: string
+): Promise<CanReviewOrderResponse> {
+  const res = await fetch(
+    `${apiUrl}/api/store/reviews/can-review-order/${encodeURIComponent(orderNumber)}`,
+    { credentials: "include" }
+  );
+  if (!res.ok) throw new Error("Failed to check review eligibility");
+  return res.json();
+}
+
+export type OrderReview = {
+  id: string;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  createdAt: string;
+};
+
+export async function getOrderReview(
+  orderId: string
+): Promise<OrderReview | null> {
+  const res = await fetch(
+    `${apiUrl}/api/store/reviews/order/${orderId}`,
+    { credentials: "include" }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("Failed to fetch order review");
+  return res.json();
+}
+
+export async function submitOrderReview(payload: {
+  orderId: string;
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+}): Promise<{ id: string; message: string }> {
+  const res = await fetch(`${apiUrl}/api/store/reviews/order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? "Failed to submit review");
   return data;
 }

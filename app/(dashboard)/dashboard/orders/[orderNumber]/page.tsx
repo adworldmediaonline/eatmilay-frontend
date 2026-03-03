@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PriceDisplay, formatPrice } from "@/components/store/price-display";
 import { OrderDetailSkeleton } from "@/components/dashboard/order-detail-skeleton";
+import { OrderReviewForm } from "@/components/dashboard/order-review-form";
 import {
   PackageIcon,
   ExternalLinkIcon,
@@ -247,6 +248,12 @@ export default function OrderDetailPage() {
               <p className="text-muted-foreground whitespace-pre-wrap text-sm">{order.notes}</p>
             </div>
           )}
+
+          <OrderReviewForm
+            orderId={order.id}
+            orderNumber={order.orderNumber}
+            orderStatus={order.status}
+          />
 
           <div className="rounded-lg border bg-card p-6">
             <div className="flex items-center gap-2 mb-2">
